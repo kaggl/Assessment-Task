@@ -10,21 +10,23 @@
       <span v-else-if="loading">loading...</span>
       <span v-else>{{ count }} results found, {{ results.length }} shown</span>
     </p>
-    <table class="table">
+    <table class="table" id="table">
       <thead>
         <tr>
           <th scope="col">Label</th>
           <th scope="col">Title</th>
-          <th scope="col">Quote</th>
-          <th scope="col">commentary</th>
+          <th scope="col">Author</th>
+          <th scope="col" class="keyword">Associated Keywords</th>
+          <th scope="col">Written</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="res in results" :key="res.legacy_pk">
           <td>{{ res.display_label }}</td>
-          <td>{{ res.text.title }}</td>
-          <td>{{ res.zitat }}</td>
-          <td>{{ res.text.kommentar }}</td>
+          <td><a :href="res.url.replace('?format=json', '')">{{ res.text.title }}</a></td>
+          <td>{{ res.autor.join(", ") }}</td>
+          <td>{{ res.key_word.map(x => x.stichwort).join(", ") }}</td>
+          <td>{{ res.text.start_date }} - {{ res.text.end_date }}</td>
         </tr>
       </tbody>
     </table>
@@ -46,7 +48,7 @@ export default {
     };
   },
   methods: {
-    async send() {
+    send() {
       console.log(this.input);
       this.init = false;
       this.loading = true;
@@ -56,13 +58,29 @@ export default {
           format: "json",
           zitat_lookup: "icontains",
           zitat: this.input,
+          limit: 20,
         }
       })
       .then((res) => {
         console.log(res.data);
-        this.results = res.data.results;
         this.count = res.data.count;
+        this.results = res.data.results;
+        for (let i = 0; i < this.results.length; i += 1) {
+          this.loading = true;
+          this.results[i].autor = [];
+          for (var j = 0; j < this.results[i].text.autor.length; j += 1) {
+            axios(this.results[i].text.autor[j])
+            .then(res => {
+              this.results[i].autor.push(res.data.name);
+              this.$forceUpdate();
+            })
+          }
+
+        }
+        /*
+        this.results = res.data.results;
         this.loading = false;
+        */
       })
       .catch((error) => {
         console.log(error);
@@ -73,10 +91,4 @@ export default {
 };
 </script>
 <style scoped>
-  th {
-    width: 35vw;
-  }
-  th:nth-of-type(2), th:first-of-type {
-    width: 15vw
-  }
 </style>
