@@ -8,7 +8,12 @@
     <p>
       <span v-if="init">Please insert search query</span>
       <span v-else-if="loading">loading...</span>
-      <span v-else>{{ count }} results found, {{ results.length }} shown</span>
+      <span v-else>{{ count }} results found, showing {{ parseInt(offset) + 1 }}-{{ (parseInt(offset) + limit) > count ? count : (parseInt(offset) + limit) }}</span>
+    </p>
+    <p>
+      <input type="button" class="btn btn-outline-primary" :disabled="!previous" @click="send(previous)" value="Previous" />
+      <input type="button" class="btn btn-outline-primary" :disabled="!next" @click="send(next)" value="Next" />
+      Results per page: <input type="number" @keyup.enter="send" v-model="limitField" />
     </p>
     <table class="table" id="table">
       <thead>
@@ -45,42 +50,54 @@ export default {
       loading: false,
       count: 0,
       init: true,
+      next: null,
+      previous: null,
+      offset: 0,
+      limit: 20,
+      limitField: 20,
     };
   },
   methods: {
-    send() {
-      console.log(this.input);
+    send(url) {
+      this.limit = parseInt(this.limitField)
       this.init = false;
       this.loading = true;
-      console.log(this.loading);
-      axios("https://mmp.acdh-dev.oeaw.ac.at/api/stelle/", {
+      if (typeof url == "string") {
+        console.log(url);
+        const urlParams = new URLSearchParams(url);
+        this.offset = urlParams.get('offset');
+      } else this.offset = 0;
+      (typeof url == "string" ? axios(url) : axios("https://mmp.acdh-dev.oeaw.ac.at/api/stelle/", {
         params: {
           format: "json",
           zitat_lookup: "icontains",
           zitat: this.input,
-          limit: 20,
+          limit: this.limit,
         }
-      })
+      }))
       .then((res) => {
         console.log(res.data);
         this.count = res.data.count;
         this.results = res.data.results;
+        this.next = res.data.next;
+        this.previous = res.data.previous;
+
+        if (!this.count) this.loading = false;
         for (let i = 0; i < this.results.length; i += 1) {
           this.loading = true;
           this.results[i].autor = [];
-          for (var j = 0; j < this.results[i].text.autor.length; j += 1) {
+
+          for (let j = 0; j < this.results[i].text.autor.length; j += 1) {
             axios(this.results[i].text.autor[j])
             .then(res => {
               this.results[i].autor.push(res.data.name);
-              this.$forceUpdate();
+              if (j == this.results[i].text.autor.length - 1) {
+                this.$forceUpdate();
+                this.loading = false;
+              }
             })
           }
-
         }
-        /*
-        this.results = res.data.results;
-        this.loading = false;
-        */
       })
       .catch((error) => {
         console.log(error);
