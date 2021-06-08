@@ -1,19 +1,20 @@
 <template>
   <div>
-    <h1>Assessment Task</h1>
-    <p>
-      <input type="text" @keyup.enter="send" v-model="input" />
-      <input type="button" class="btn btn-outline-primary" @click="send" value="Submit" />
-    </p>
+    <div class="search input-group mb-3">
+      <input type="text" @keyup.enter="send" v-model="input" class="form-control" placeholder="" aria-label="" aria-describedby="basic-addon1">
+      <div class="input-group-prepend">
+        <button class="btn btn-outline-primary" @click="send"  type="button">Submit</button>
+      </div>
+    </div>
     <p>
       <span v-if="init">Please insert search query</span>
       <span v-else-if="loading">loading...</span>
       <span v-else>{{ count }} results found, showing {{ parseInt(offset) + 1 }}-{{ (parseInt(offset) + limit) > count ? count : (parseInt(offset) + limit) }}</span>
     </p>
     <p>
-      <input type="button" class="btn btn-outline-primary" :disabled="!previous" @click="send(previous)" value="Previous" />
-      <input type="button" class="btn btn-outline-primary" :disabled="!next" @click="send(next)" value="Next" />
-      Results per page: <input type="number" @keyup.enter="send" v-model="limitField" />
+      <input type="button" class="btn btn-outline-primary navButton" :disabled="!previous" @click="send(previous)" value="Previous" />
+      Results per page: <input type="number" @keyup.enter="send" v-model="limitField" class="form-control limit" />
+      <input type="button" class="btn btn-outline-primary navButton" :disabled="!next" @click="send(next)" value="Next" />
     </p>
     <table class="table" id="table">
       <thead>
@@ -59,14 +60,16 @@ export default {
   },
   methods: {
     send(url) {
-      this.limit = parseInt(this.limitField)
       this.init = false;
       this.loading = true;
       if (typeof url == "string") {
         console.log(url);
         const urlParams = new URLSearchParams(url);
         this.offset = urlParams.get('offset') ? urlParams.get('offset') : 0;
-      } else this.offset = 0;
+      } else {
+        this.limit = parseInt(this.limitField)
+        this.offset = 0;
+      }
       (typeof url == "string" ? axios(url) : axios("https://mmp.acdh-dev.oeaw.ac.at/api/stelle/", {
         params: {
           format: "json",
@@ -108,4 +111,20 @@ export default {
 };
 </script>
 <style scoped>
+  table {
+    margin: auto;
+    width: 80vw;
+  }
+  .search {
+    width: 30vw;
+    margin: auto;
+  }
+  .navButton {
+    min-width: 100px;
+    margin: 0 10px;
+  }
+  .limit {
+    width: 80px;
+    display: inline-block;
+  }
 </style>
