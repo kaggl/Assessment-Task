@@ -65,7 +65,7 @@ export default {
       if (typeof url == "string") {
         console.log(url);
         const urlParams = new URLSearchParams(url);
-        this.offset = urlParams.get('offset');
+        this.offset = urlParams.get('offset') ? urlParams.get('offset') : 0;
       } else this.offset = 0;
       (typeof url == "string" ? axios(url) : axios("https://mmp.acdh-dev.oeaw.ac.at/api/stelle/", {
         params: {
