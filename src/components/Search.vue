@@ -1,9 +1,9 @@
 <template>
   <div>
     <div class="search input-group mb-3">
-      <input type="text" @keyup.enter="send" v-model="input" class="form-control" placeholder="Please Enter your Search terms here" aria-label="" aria-describedby="basic-addon1">
+      <input type="text" @keyup.enter="send" v-model="input" class="form-control" aria-describedby="basic-addon1">
       <div class="input-group-prepend">
-        <button class="btn btn-outline-primary" @click="send"  type="button">
+        <button class="btn btn-primary" @click="send"  type="button">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
             <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
           </svg>
@@ -16,41 +16,25 @@
       <span v-else>{{ count }} results found, showing {{ parseInt(offset) + 1 }}-{{ (parseInt(offset) + limit) > count ? count : (parseInt(offset) + limit) }}</span>
     </p>
     <p>
-      <input type="button" class="btn btn-outline-primary navButton" :disabled="!previous" @click="send(previous)" value="Previous" />
-      Results per page: <input type="number" @keyup.enter="send" v-model="limitField" class="form-control limit" />
-      <input type="button" class="btn btn-outline-primary navButton" :disabled="!next" @click="send(next)" value="Next" />
+      <button class="btn btn-outline-primary navButton" :disabled="!previous" @click="send(previous)">Previous</button>
+      <label for="limit">Results per page:</label>
+      <input type="number" id="limit" v-model="limitField" class="form-control limit" />
+      <button class="btn btn-outline-primary navButton" :disabled="!next" @click="send(next)">Next</button>
     </p>
-    <table class="table" id="table">
-      <thead>
-        <tr>
-          <th scope="col">Label</th>
-          <th scope="col">Title</th>
-          <th scope="col">Author</th>
-          <th scope="col" class="keyword">Associated Keywords</th>
-          <th scope="col">Written</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="res in results" :key="res.legacy_pk">
-          <td>{{ res.display_label }}</td>
-          <td><a :href="res.url.replace('?format=json', '')">{{ res.text.title }}</a></td>
-          <td>{{ res.autor.join(", ") }}</td>
-          <td>{{ res.key_word.map(x => x.stichwort).join(", ") }}</td>
-          <td>{{ res.text.start_date }} - {{ res.text.end_date }}</td>
-        </tr>
-      </tbody>
-    </table>
+    <data-table :entries="results" :key="renderKey" />
   </div>
 </template>
 
 <script>
-import axios from "axios";
+import axios from 'axios';
+
+import DataTable from './DataTable';
 
 export default {
-  name: "HelloWorld",
+  name: 'Search',
   data() {
     return {
-      input: "",
+      input: '',
       results: [],
       loading: false,
       count: 0,
@@ -60,13 +44,18 @@ export default {
       offset: 0,
       limit: 20,
       limitField: 20,
+      renderKey: 0,
     };
+  },
+  components: {
+    DataTable,
   },
   methods: {
     send(url) {
+      const urlProvided = typeof url == 'string';
       this.init = false;
       this.loading = true;
-      if (typeof url == "string") {
+      if (urlProvided) {
         console.log(url);
         const urlParams = new URLSearchParams(url);
         this.offset = urlParams.get('offset') ? urlParams.get('offset') : 0;
@@ -74,10 +63,10 @@ export default {
         this.limit = parseInt(this.limitField)
         this.offset = 0;
       }
-      (typeof url == "string" ? axios(url) : axios("https://mmp.acdh-dev.oeaw.ac.at/api/stelle/", {
+      (urlProvided ? axios(url) : axios('https://mmp.acdh-dev.oeaw.ac.at/api/stelle/', {
         params: {
-          format: "json",
-          zitat_lookup: "icontains",
+          format: 'json',
+          zitat_lookup: 'icontains',
           zitat: this.input,
           limit: this.limit,
         }
@@ -93,16 +82,23 @@ export default {
         for (let i = 0; i < this.results.length; i += 1) {
           this.loading = true;
           this.results[i].autor = [];
+          const authorArray = this.results[i].text.autor;
 
-          for (let j = 0; j < this.results[i].text.autor.length; j += 1) {
-            axios(this.results[i].text.autor[j])
+          for (let j = 0; j < authorArray.length; j += 1) {
+
+            axios(authorArray[j])
             .then(res => {
               this.results[i].autor.push(res.data.name);
-              if (j == this.results[i].text.autor.length - 1) {
-                this.$forceUpdate();
+              if (j == authorArray.length - 1) {
+                this.renderKey += 1;
                 this.loading = false;
               }
             })
+            .catch((error) => {
+              console.log(error);
+              this.loading = false;
+            });
+
           }
         }
       })
@@ -115,10 +111,6 @@ export default {
 };
 </script>
 <style scoped>
-  table {
-    margin: auto;
-    width: 80vw;
-  }
   .search {
     width: 30vw;
     margin: auto;
@@ -130,5 +122,8 @@ export default {
   .limit {
     width: 80px;
     display: inline-block;
+  }
+  label {
+    margin-right: 5px;
   }
 </style>
