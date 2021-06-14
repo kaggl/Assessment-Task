@@ -14,6 +14,9 @@ npm run serve
 # build for production with minification
 npm run build
 
+# push build to Github Pages
+git subtree push --prefix dist origin gh-pages
+
 # build for production and view the bundle analyzer report
 npm run build --report
 ```
