@@ -1,4 +1,4 @@
-<template lang="html">
+<template>
   <nav class="navbar navbar-expand-lg navbar-light">
     <div class="container">
       <!-- Your site title as branding in the menu -->

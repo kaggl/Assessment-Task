@@ -1,0 +1,19 @@
+{
+  "overrides": [
+    {
+      "files": [
+        "**/*.spec.js",
+        "**/*.spec.jsx"
+      ],
+      "env": {
+        "jest": true
+      }
+    }
+  ],
+  "parser": "vue-eslint-parser",
+  "parserOptions": {
+      "parser": "babel-eslint",
+      "ecmaVersion": 2020,
+      "sourceType": "module"
+  }
+}
