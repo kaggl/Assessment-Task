@@ -1,9 +1,9 @@
 <template>
   <div>
     <div class="search input-group mb-3">
-      <input type="text" @keyup.enter="send" v-model="input" class="form-control" aria-describedby="basic-addon1">
+      <input type="text" @keyup.enter="enterQuery" v-model="input" class="form-control" aria-describedby="basic-addon1">
       <div class="input-group-prepend">
-        <button class="btn btn-primary" @click="send"  type="button">
+        <button class="btn btn-primary" @click="enterQuery"  type="button">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
             <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
           </svg>
@@ -41,11 +41,17 @@ export default {
       init: true,
       next: null,
       previous: null,
-      offset: 0,
+      offset: this.offsetProp,
       limit: 20,
       limitField: 20,
       renderKey: 0,
     };
+  },
+  props: {
+    offsetProp: {
+      type: String,
+      default: '20',
+    },
   },
   components: {
     DataTable,
@@ -107,6 +113,21 @@ export default {
         this.loading = false;
       });
     },
+    enterQuery() {
+      this.$router.push({ name: 'Search', params: {
+        search: this.input,
+        offsetProp: this.offset,
+      } });
+      this.send()
+    },
+  },
+  mounted() {
+    console.log(this.offsetProp);
+    if (this.offsetProp) this.offset = parseInt(this.offsetProp);
+    if (this.$route.params.search) {
+      this.input = this.$route.params.search;
+      this.send();
+    }
   },
 };
 </script>

@@ -12,7 +12,9 @@
     <tbody>
       <tr v-for="res in entries" :key="res.legacy_pk">
         <td scope="row">{{ res.display_label }}</td>
-        <td scope="row"><a :href="res.url.replace('?format=json', '')">{{ res.text.title }}</a></td>
+        <td scope="row">
+          <router-link :to="`/detail/${res.legacy_pk + 1}`">{{ res.text.title }}</router-link>
+        </td>
         <td scope="row">{{ res.autor.join(", ") }}</td>
         <td scope="row">{{ res.key_word.map(x => x.stichwort).join(", ") }}</td>
         <td scope="row">{{ res.text.start_date ? res.text.start_date : 'unknown' }} - {{ res.text.end_date ? res.text.end_date : 'unknown' }}</td>
