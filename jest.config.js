@@ -9,6 +9,7 @@ module.exports = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1'
   },
+  testEnvironment: 'jest-environment-jsdom-sixteen',
   snapshotSerializers: ['jest-serializer-vue'],
   transformIgnorePatterns: ['<rootDir>/node_modules/']
 };

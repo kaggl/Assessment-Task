@@ -1,10 +1,12 @@
-import { shallowMount } from '@vue/test-utils';
-import DataTable from '@/components/DataTable';
+import { mount, createLocalVue, Wrapper, shallowMount } from '@vue/test-utils'
+import DataTable from '@/components/DataTable.vue';
 
 const App = {
   name: 'App',
-  template: '',
+  template: '<div />',
 }
+
+console.log(DataTable)
 
 const testData = [
   {
@@ -28,13 +30,10 @@ const testData = [
 ]
 
 test('DataTable', () => {
-  console.log('typeof App:', typeof App, 'App:', App);
-  console.log('typeof DataTable:', typeof DataTable, 'App:', DataTable);
-  console.log(shallowMount(App));
-  const wrapper = shallowMount(DataTable, {
-    propsData: {
-      entries: testData,
-    }
+  const wrapper = mount(DataTable, {
+    // props: {
+    //   entries: testData,
+    // }
   });
   console.log(wrapper);
 });
