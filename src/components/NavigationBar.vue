@@ -7,6 +7,9 @@
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
+      <button class="form-inline btn btn-outline-info" href="https://github.com/kaggl/Assessment-Task">
+        Repository
+      </button>
     </div><!-- .container -->
   </nav>
 </template>
