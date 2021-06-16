@@ -36,8 +36,4 @@ export default {
 </script>
 
 <style lang="css" scoped>
-  table {
-    margin: auto;
-    width: 80vw;
-  }
 </style>

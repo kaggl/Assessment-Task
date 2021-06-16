@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div class="search input-group mb-3">
+  <div class="container">
+    <div class="search input-group mb-3 col-md-6">
       <div class="input-group-prepend">
         <button class="btn btn-outline-info dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ filter }}</button>
         <div class="dropdown-menu">
@@ -140,7 +140,6 @@ export default {
 </script>
 <style scoped>
   .search {
-    width: 30vw;
     margin: auto;
   }
   .navButton {

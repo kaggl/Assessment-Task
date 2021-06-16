@@ -1,10 +1,10 @@
 <template lang="html">
-  <div>
+  <div class="container">
     <table class="table" id="table">
       <thead>
         <tr>
           <th scope="col">Name</th>
-          <th scope="col">Wert</th>
+          <th scope="col">Content</th>
         </tr>
       </thead>
       <tbody>
@@ -69,8 +69,8 @@ export default {
 
       if (!Object.keys(obj).length) return retObj;
 
-      retObj.Title = obj.text.title;
       retObj.Quote = obj.zitat;
+      retObj.Title = obj.text.title;
       retObj.Cited = obj.zitat_stelle;
       retObj.Summary = obj.summary;
       retObj.Autor = obj.autor.join(", ");
