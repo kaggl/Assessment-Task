@@ -2,7 +2,7 @@
   <div class="container">
     <div class="row">
       <div class="search input-group mb-3 col-md-6 offset-md-3">
-        <input type="text" placeholder="Stelle" @keyup.enter="enterQuery" v-model="input" class="form-control" aria-describedby="basic-addon1">
+        <input type="text" placeholder="Passage" @keyup.enter="enterQuery" v-model="input" class="form-control" aria-describedby="basic-addon1">
         <input type="text" placeholder="Use Case" @keyup.enter="enterQuery" v-if="advanced" v-model="useCase" class="form-control" aria-describedby="basic-addon1">
         <div class="input-group-prepend">
           <button class="btn btn-primary" @click="enterQuery"  type="button">
