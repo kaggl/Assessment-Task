@@ -1,22 +1,29 @@
 <template>
   <div class="container">
-    <div class="search input-group mb-3 col-md-6">
-      <div class="input-group-prepend">
-        <button class="btn btn-outline-info dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ filter }}</button>
-        <div class="dropdown-menu">
-          <a class="dropdown-item" href="#" @click="filter = 'Stelle'">Stelle</a>
-          <a class="dropdown-item" href="#" @click="filter = 'Use Case'">Use Case</a>
+    <div class="row">
+      <div class="search input-group mb-3 col-md-6 offset-md-3">
+        <input type="text" placeholder="Stelle" @keyup.enter="enterQuery" v-model="input" class="form-control" aria-describedby="basic-addon1">
+        <input type="text" placeholder="Use Case" @keyup.enter="enterQuery" v-if="advanced" v-model="useCase" class="form-control" aria-describedby="basic-addon1">
+        <div class="input-group-prepend">
+          <button class="btn btn-primary" @click="enterQuery"  type="button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+              <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+            </svg>
+          </button>
         </div>
       </div>
-      <input type="text" @keyup.enter="enterQuery" v-model="input" class="form-control" aria-describedby="basic-addon1">
-      <div class="input-group-prepend">
-        <button class="btn btn-primary" @click="enterQuery"  type="button">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
-          </svg>
-        </button>
+      <div class="col-md-2">
+        <div class="form-check form-switch">
+          <button class="btn">
+            <input class="form-check-input" type="checkbox" id="checkbox" v-model="advanced">
+            <label class="form-check-label" for="checkbox">
+              Advanced Search
+            </label>
+          </button>
+        </div>
       </div>
     </div>
+    <hr />
     <p>
       <span v-if="init">Please insert search query</span>
       <span v-else-if="loading">loading...</span>
@@ -41,6 +48,7 @@ export default {
   data() {
     return {
       input: '',
+      useCase: '',
       results: [],
       loading: false,
       count: 0,
@@ -51,7 +59,7 @@ export default {
       limit: 20,
       limitField: 20,
       renderKey: 0,
-      filter: 'Stelle',
+      advanced: false,
     };
   },
   props: {
@@ -76,14 +84,16 @@ export default {
         this.limit = parseInt(this.limitField)
         this.offset = 0;
       }
-      (urlProvided ? axios(url) : axios('https://mmp.acdh-dev.oeaw.ac.at/api/stelle/', {
-        params: {
-          format: 'json',
-          zitat_lookup: 'icontains',
-          zitat: this.input,
-          limit: this.limit,
-        }
-      }))
+
+      const params = {
+        format: 'json',
+        zitat_lookup: 'icontains',
+        zitat: this.input,
+        limit: this.limit,
+      }
+      if (this.advanced && this.useCase) params.use_case = this.useCase;
+
+      (urlProvided ? axios(url) : axios('https://mmp.acdh-dev.oeaw.ac.at/api/stelle/', { params }))
       .then((res) => {
         console.log(res.data);
         this.count = res.data.count;
@@ -139,9 +149,6 @@ export default {
 };
 </script>
 <style scoped>
-  .search {
-    margin: auto;
-  }
   .navButton {
     min-width: 100px;
     margin: 0 10px;
@@ -149,6 +156,9 @@ export default {
   .limit {
     width: 80px;
     display: inline-block;
+  }
+  .inline-link {
+    padding: 5px;
   }
   label {
     margin-right: 5px;
