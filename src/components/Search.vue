@@ -1,6 +1,13 @@
 <template>
   <div>
     <div class="search input-group mb-3">
+      <div class="input-group-prepend">
+        <button class="btn btn-outline-info dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ filter }}</button>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" href="#" @click="filter = 'Stelle'">Stelle</a>
+          <a class="dropdown-item" href="#" @click="filter = 'Use Case'">Use Case</a>
+        </div>
+      </div>
       <input type="text" @keyup.enter="enterQuery" v-model="input" class="form-control" aria-describedby="basic-addon1">
       <div class="input-group-prepend">
         <button class="btn btn-primary" @click="enterQuery"  type="button">
@@ -27,7 +34,6 @@
 
 <script>
 import axios from 'axios';
-
 import DataTable from './DataTable';
 
 export default {
@@ -45,6 +51,7 @@ export default {
       limit: 20,
       limitField: 20,
       renderKey: 0,
+      filter: 'Stelle',
     };
   },
   props: {

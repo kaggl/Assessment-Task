@@ -1,12 +1,6 @@
-import { mount, createLocalVue, Wrapper, shallowMount } from '@vue/test-utils'
-import DataTable from '@/components/DataTable.vue';
-
-const App = {
-  name: 'App',
-  template: '<div />',
-}
-
-console.log(DataTable)
+import { shallowMount } from '@vue/test-utils'
+import Search from '@/components/Search.vue';
+import router from '@/router';
 
 const testData = [
   {
@@ -28,12 +22,18 @@ const testData = [
     ]
   },
 ]
-
+/*
 test('DataTable', () => {
-  const wrapper = mount(DataTable, {
-    // props: {
-    //   entries: testData,
-    // }
+  const wrapper = shallowMount(DataTable, {
+    propsData: { entries: testData },
+    stubs: ['router-link', 'router-view'],
   });
+
+  console.log(wrapper);
+});
+*/
+test('Search', () => {
+  const wrapper = shallowMount(Search);
+
   console.log(wrapper);
 });
