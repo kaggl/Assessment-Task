@@ -4,6 +4,14 @@
       <!-- Your site title as branding in the menu -->
       <router-link to="/search/" class="navbar-brand custom-logo-link" rel="home"><img src="../assets/fundament_logo.svg" class="img-fluid" alt="Your Logo" itemprop="logo"></router-link>
       <router-link to="/search/" class="navbar-brand site-title-with-logo" rel="home" title="Assessment Task">Assessment Task</router-link>
+      <select class="form-select" aria-label="Default select example" v-model="$i18n.locale">
+        <option selected value="en">
+          en
+        </option>
+        <option value="de">
+          de
+        </option>
+      </select>
       <a href="https://github.com/kaggl/Assessment-Task">
         <button class="form-inline btn btn-outline-info">
           Repository
@@ -16,8 +24,8 @@
 <script>
 export default {
   name: 'NavigationBar',
+  mounted() {
+    console.log('$t', this.$i18n.locale);
+  }
 }
 </script>
-
-<style lang="css" scoped>
-</style>

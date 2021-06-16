@@ -8,14 +8,17 @@
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint",
-    "deploy": "sh deploy.sh"
+    "deploy": "sh deploy.sh",
+    "i18n:report": "vue-cli-service i18n:report --src \"./src/**/*.?(js|vue)\" --locales \"./src/locales/**/*.json\""
   },
   "dependencies": {
     "axios": "0.21.1",
     "vue": "^3.1.1",
+    "vue-i18n": "^9.1.0",
     "vue-router": "^4.0.0-0"
   },
   "devDependencies": {
+    "@intlify/vue-i18n-loader": "^2.1.0",
     "@vue/cli-plugin-babel": "^4.5.13",
     "@vue/cli-plugin-eslint": "~4.5.13",
     "@vue/cli-plugin-router": "~4.5.0",
@@ -31,6 +34,7 @@
     "jest-transform-stub": "^2.0.0",
     "lint-staged": "^11.0.0",
     "typescript": "~3.9.3",
+    "vue-cli-plugin-i18n": "~2.1.1",
     "vue-jest": "^5.0.0-alpha.10"
   },
   "eslintConfig": {
