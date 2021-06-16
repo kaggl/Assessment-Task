@@ -10,7 +10,7 @@
       <tbody>
         <tr v-for="key in Object.keys(filteredObject)">
           <td scope="row">{{ key }}</td>
-          <td scope="row">{{ filteredObject[key] }}</td>
+          <td scope="row">{{ Array.isArray(filteredObject[key]) ? filteredObject[key].join(', ') : filteredObject[key] }}</td>
         </tr>
       </tbody>
     </table>
@@ -25,6 +25,7 @@
 
 <script>
 import axios from 'axios';
+import config from '/detailView.config'
 
 export default {
   name: 'DetailView',
@@ -69,26 +70,29 @@ export default {
 
       if (!Object.keys(obj).length) return retObj;
 
-      retObj.Quote = obj.zitat;
-      retObj.Title = obj.text.title;
-      retObj.Cited = obj.zitat_stelle;
-      retObj.Summary = obj.summary;
-      retObj.Autor = obj.autor.join(", ");
-      retObj.Edition = obj.text.edition;
+      for (let i = 0; i < config.attributes.length; i += 1) {
+        retObj[config.attributes[i].name] = eval(`obj.${config.attributes[i].attr}`);
+      }
 
-      retObj.Written = `${obj.text.start_date ? obj.text.start_date : 'unknown'} - ${(obj.text.end_date ? obj.text.end_date : 'unknown')}`;
+      for (let i = 0; i < retObj.Author.length; i += 1) {
+        if (retObj.Author[i].includes('https://')) {
+          axios(retObj.Author[i])
+          .then((res) => {
+            console.log('Autor:', res.data);
+            retObj.Author[i] = res.data.name;
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+        }
+      }
 
-      retObj.Translation = obj.Translation
-
-      retObj.Keywords = obj.key_word.map(x => x.stichwort).join(", ")
-
-      retObj.Comment = obj.kommentar;
-
+      retObj.Keywords = retObj.Keywords.map(x => x.stichwort);
       return retObj;
     },
-
   },
   mounted() {
+    console.log('config', config);
     this.getDetails(this.$route.params.id)
   }
 }
