@@ -17,7 +17,7 @@
           <button class="btn">
             <input class="form-check-input" type="checkbox" id="checkbox" v-model="advanced">
             <label class="form-check-label" for="checkbox">
-              Advanced Search
+              {{ $t('advancedSearch') }}
             </label>
           </button>
         </div>
@@ -25,15 +25,15 @@
     </div>
     <hr />
     <p>
-      <span v-if="init">Please insert search query</span>
-      <span v-else-if="loading">loading...</span>
-      <span v-else>{{ count }} results found, showing {{ parseInt(offset) + 1 }}-{{ (parseInt(offset) + limit) > count ? count : (parseInt(offset) + limit) }}</span>
+      <span v-if="init">{{ $t('query') }}</span>
+      <span v-else-if="loading">{{ $t('loading') }}...</span>
+      <span v-else>{{ count }} {{ $t('results')}} {{ parseInt(offset) + 1 }}-{{ (parseInt(offset) + limit) > count ? count : (parseInt(offset) + limit) }}</span>
     </p>
     <p>
-      <button class="btn btn-outline-primary navButton" :disabled="!previous" @click="send(previous)">Previous</button>
-      <label for="limit">Results per page:</label>
+      <button class="btn btn-outline-primary navButton" :disabled="!previous" @click="send(previous)">{{ $t('previous') }}</button>
+      <label for="limit">{{ $t('resultsperPage') }}:</label>
       <input type="number" id="limit" v-model="limitField" class="form-control limit" />
-      <button class="btn btn-outline-primary navButton" :disabled="!next" @click="send(next)">Next</button>
+      <button class="btn btn-outline-primary navButton" :disabled="!next" @click="send(next)">{{ $t('next') }}</button>
     </p>
     <data-table :entries="results" :key="renderKey" />
   </div>
@@ -104,18 +104,23 @@ export default {
         if (!this.count) this.loading = false;
         for (let i = 0; i < this.results.length; i += 1) {
           this.loading = true;
-          this.results[i].autor = [];
+          this.results[i].autorLocale = []
           const authorArray = this.results[i].text.autor;
 
           for (let j = 0; j < authorArray.length; j += 1) {
 
             axios(authorArray[j])
             .then(res => {
-              this.results[i].autor.push(res.data.name);
-              if (j == authorArray.length - 1) {
-                this.renderKey += 1;
-                this.loading = false;
-              }
+              console.log('Autor', res.data);
+              this.results[i].autorLocale.push({
+                de: res.data.name,
+                en: res.data.name_en,
+                fr: res.data.name_fr,
+                gr: res.data.name_gr,
+                it: res.data.name_it,
+                lat: res.data.name_lat,
+              });
+              this.loading = false;
             })
             .catch((error) => {
               console.log(error);
@@ -167,10 +172,24 @@ export default {
 <i18n>
 {
   "en": {
-    "stelle": "Passage"
+    "stelle": "Passage",
+    "advancedSearch": "Advanced Search",
+    "query": "Please insert search query",
+    "loading": "loading",
+    "results": "results found, showing",
+    "resultsperPage": "Results per page",
+    "previous": "Previous",
+    "next": "Next",
   },
   "de": {
-    "stelle": "Stelle"
+    "stelle": "Stelle",
+    "advancedSearch": "Erweiterte Suche",
+    "query": "Bitte Suchbegriff eingeben",
+    "loading": "lädt",
+    "results": "Ergebnisse gefunden, zeige",
+    "resultsperPage": "Ergebnisse pro Seite",
+    "previous": "Vorherige",
+    "next": "Nächste",
   }
 }
 </i18n>

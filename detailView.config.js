@@ -1,58 +1,80 @@
 module.exports = {
   attributes: [
     {
-      name: 'Quote',
-      name_de: 'Zitat',
+      name: {
+        en: 'Quote',
+        de: 'Zitat',
+      },
       attr: 'zitat',
     },
     {
-      name: 'Title',
-      name_de: 'Titel',
+      name: {
+          en: 'Title',
+          de: 'Titel',
+      },
       attr: 'text.title',
     },
     {
-      name: 'Cited',
-      name_de: 'Zitatstelle',
+      name: {
+        en: 'Cited',
+        de: 'Zitatstelle',
+      },
       attr: 'zitat_stelle',
     },
     {
-      name: 'Summary',
-      name_de: 'Zusammenfassung',
+      name: {
+        en: 'Summary',
+        de: 'Zusammenfassung',
+      },
       attr: 'summary',
     },
     {
-      name: 'Author',
-      name_de: 'Autor',
+      name: {
+        en: 'Author',
+        de: 'Autor',
+      },
       attr: 'text.autor',
     },
     {
-      name: 'Edition',
-      name_de: 'Auflage',
+      name: {
+        en: 'Edition',
+        de: 'Auflage',
+      },
       attr: 'text.edition',
     },
     {
-      name: 'Start date',
-      name_de: 'Beginndatum',
+      name: {
+        en: 'Start date',
+        de: 'Beginndatum',
+      },
       attr: 'text.start_date',
     },
     {
-      name: 'End date',
-      name_de: 'Enddatum',
+      name: {
+        en: 'End date',
+        de: 'Enddatum',
+      },
       attr: 'text.end_date',
     },
     {
-      name: 'Translation',
-      name_de: 'Übersetzung',
+      name: {
+          en: 'Translation',
+          de: 'Übersetzung',
+      },
       attr: 'translation',
     },
     {
-      name: 'Keywords',
-      name_de: 'Stichwörter',
+      name: {
+        en: 'Keywords',
+        de: 'Stichwörter',
+      },
       attr: 'key_word',
     },
     {
-      name: 'Comment',
-      name_de: 'Kommentar',
+      name: {
+        en: 'Comment',
+        de: 'Kommentar',
+      },
       attr: 'kommentar',
     },
   ],
