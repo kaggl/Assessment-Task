@@ -1,0 +1,199 @@
+{
+  "nodes": [{
+      "type": "archiv__keyword",
+      "label": "alienigenae, [wurzel: alienigen]",
+      "id": "archiv__keyword__9",
+      "detail_view_url": "/archiv/keyword/detail/9",
+      "as_graph": "/netvis/graph/archiv/keyword/9"
+    },
+    {
+      "type": "archiv__keyword",
+      "label": "gens, [wurzel: gent]",
+      "id": "archiv__keyword__76",
+      "detail_view_url": "/archiv/keyword/detail/76",
+      "as_graph": "/netvis/graph/archiv/keyword/76"
+    },
+    {
+      "type": "archiv__keyword",
+      "label": "gens christiana, [wurzel: gens christiana]",
+      "id": "archiv__keyword__77",
+      "detail_view_url": "/archiv/keyword/detail/77",
+      "as_graph": "/netvis/graph/archiv/keyword/77"
+    },
+    {
+      "type": "archiv__keyword",
+      "label": "Iudaici, [wurzel: iudaic]",
+      "id": "archiv__keyword__114",
+      "detail_view_url": "/archiv/keyword/detail/114",
+      "as_graph": "/netvis/graph/archiv/keyword/114"
+    },
+    {
+      "type": "archiv__keyword",
+      "label": "lex, [wurzel: leg]",
+      "id": "archiv__keyword__118",
+      "detail_view_url": "/archiv/keyword/detail/118",
+      "as_graph": "/netvis/graph/archiv/keyword/118"
+    },
+    {
+      "type": "archiv__keyword",
+      "label": "patria, [wurzel: patri]",
+      "id": "archiv__keyword__144",
+      "detail_view_url": "/archiv/keyword/detail/144",
+      "as_graph": "/netvis/graph/archiv/keyword/144"
+    },
+    {
+      "type": "archiv__keyword",
+      "label": "populus, [wurzel: popul]",
+      "id": "archiv__keyword__154",
+      "detail_view_url": "/archiv/keyword/detail/154",
+      "as_graph": "/netvis/graph/archiv/keyword/154"
+    },
+    {
+      "type": "archiv__keyword",
+      "label": "rex, [wurzel: reg]",
+      "id": "archiv__keyword__168",
+      "detail_view_url": "/archiv/keyword/detail/168",
+      "as_graph": "/netvis/graph/archiv/keyword/168"
+    },
+    {
+      "type": "archiv__keyword",
+      "label": "rex gentium, [wurzel: re* gentium]",
+      "id": "archiv__keyword__169",
+      "detail_view_url": "/archiv/keyword/detail/169",
+      "as_graph": "/netvis/graph/archiv/keyword/169"
+    },
+    {
+      "type": "archiv__keyword",
+      "label": "Romani, [wurzel: roman]",
+      "id": "archiv__keyword__173",
+      "detail_view_url": "/archiv/keyword/detail/173",
+      "as_graph": "/netvis/graph/archiv/keyword/173"
+    }
+  ],
+  "edges": [{
+      "id": 8,
+      "source": "archiv__keyword__76",
+      "target": "archiv__keyword__9",
+      "type": "e"
+    },
+    {
+      "id": 18,
+      "source": "archiv__keyword__118",
+      "target": "archiv__keyword__76",
+      "type": "e"
+    },
+    {
+      "id": 22,
+      "source": "archiv__keyword__118",
+      "target": "archiv__keyword__9",
+      "type": "e"
+    },
+    {
+      "id": 23,
+      "source": "archiv__keyword__118",
+      "target": "archiv__keyword__76",
+      "type": "e"
+    },
+    {
+      "id": 26,
+      "source": "archiv__keyword__144",
+      "target": "archiv__keyword__76",
+      "type": "e"
+    },
+    {
+      "id": 27,
+      "source": "archiv__keyword__144",
+      "target": "archiv__keyword__118",
+      "type": "e"
+    },
+    {
+      "id": 30,
+      "source": "archiv__keyword__154",
+      "target": "archiv__keyword__114",
+      "type": "e"
+    },
+    {
+      "id": 34,
+      "source": "archiv__keyword__168",
+      "target": "archiv__keyword__114",
+      "type": "e"
+    },
+    {
+      "id": 35,
+      "source": "archiv__keyword__168",
+      "target": "archiv__keyword__154",
+      "type": "e"
+    },
+    {
+      "id": 38,
+      "source": "archiv__keyword__168",
+      "target": "archiv__keyword__9",
+      "type": "e"
+    },
+    {
+      "id": 39,
+      "source": "archiv__keyword__168",
+      "target": "archiv__keyword__76",
+      "type": "e"
+    },
+    {
+      "id": 40,
+      "source": "archiv__keyword__168",
+      "target": "archiv__keyword__118",
+      "type": "e"
+    },
+    {
+      "id": 42,
+      "source": "archiv__keyword__168",
+      "target": "archiv__keyword__77",
+      "type": "e"
+    },
+    {
+      "id": 44,
+      "source": "archiv__keyword__169",
+      "target": "archiv__keyword__114",
+      "type": "e"
+    },
+    {
+      "id": 45,
+      "source": "archiv__keyword__169",
+      "target": "archiv__keyword__154",
+      "type": "e"
+    },
+    {
+      "id": 46,
+      "source": "archiv__keyword__169",
+      "target": "archiv__keyword__168",
+      "type": "e"
+    },
+    {
+      "id": 48,
+      "source": "archiv__keyword__173",
+      "target": "archiv__keyword__76",
+      "type": "e"
+    },
+    {
+      "id": 49,
+      "source": "archiv__keyword__173",
+      "target": "archiv__keyword__118",
+      "type": "e"
+    },
+    {
+      "id": 50,
+      "source": "archiv__keyword__173",
+      "target": "archiv__keyword__144",
+      "type": "e"
+    }
+  ],
+  "types": {
+    "nodes": [{
+      "id": "n",
+      "label": "Keyword",
+      "color": "#006699"
+    }],
+    "edges": [{
+      "id": "e",
+      "color": "#990066"
+    }]
+  }
+}

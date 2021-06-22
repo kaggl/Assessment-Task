@@ -17,7 +17,7 @@
         </td>
         <td scope="row">{{ localeAuthors(res.autorLocale).join(", ") }}</td>
         <td scope="row">{{ res.key_word.map(x => x.stichwort).join(", ") }}</td>
-        <td scope="row">{{ res.text.start_date ? res.text.start_date : 'unknown' }} - {{ res.text.end_date ? res.text.end_date : 'unknown' }}</td>
+        <td scope="row">{{ res.text.start_date || 'unknown' }} - {{ res.text.end_date || 'unknown' }}</td>
       </tr>
     </tbody>
   </table>

@@ -27,7 +27,8 @@
     <p>
       <span v-if="init">{{ $t('query') }}</span>
       <span v-else-if="loading">{{ $t('loading') }}...</span>
-      <span v-else>{{ count }} {{ $t('results')}} {{ parseInt(offset) + 1 }}-{{ (parseInt(offset) + limit) > count ? count : (parseInt(offset) + limit) }}</span>
+      <span v-else-if="count">{{ count }} {{ $t('results')}} {{ parseInt(offset) + 1 }}-{{ (parseInt(offset) + limit) > count ? count : (parseInt(offset) + limit) }}</span>
+      <span v-else>{{ $t('noResults') }}</span>
     </p>
     <p>
       <button class="btn btn-outline-primary navButton" :disabled="!previous" @click="send(previous)">{{ $t('previous') }}</button>
@@ -35,13 +36,18 @@
       <input type="number" id="limit" v-model="limitField" class="form-control limit" />
       <button class="btn btn-outline-primary navButton" :disabled="!next" @click="send(next)">{{ $t('next') }}</button>
     </p>
+    <!-- >
+      <visualization2D />
+    -->
     <data-table :entries="results" :key="renderKey" />
   </div>
 </template>
 
 <script>
 import axios from 'axios';
+
 import DataTable from './DataTable';
+import Visualization2D from './Visualization2D';
 
 export default {
   name: 'Search',
@@ -70,6 +76,7 @@ export default {
   },
   components: {
     DataTable,
+    Visualization2D,
   },
   methods: {
     send(url) {
@@ -144,6 +151,7 @@ export default {
     },
   },
   mounted() {
+    console.log(Visualization2D);
     if (this.offsetProp) this.offset = parseInt(this.offsetProp);
     if (this.$route.params.search) {
       this.input = this.$route.params.search;
@@ -177,6 +185,7 @@ export default {
     "query": "Please insert search query",
     "loading": "loading",
     "results": "results found, showing",
+    "noResults": "No results",
     "resultsperPage": "Results per page",
     "previous": "Previous",
     "next": "Next",
@@ -187,6 +196,7 @@ export default {
     "query": "Bitte Suchbegriff eingeben",
     "loading": "lädt",
     "results": "Ergebnisse gefunden, zeige",
+    "noResults": "Keine Suchergebnisse",
     "resultsperPage": "Ergebnisse pro Seite",
     "previous": "Vorherige",
     "next": "Nächste",

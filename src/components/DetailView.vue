@@ -1,4 +1,4 @@
-<template lang="html">
+<template>
   <div class="container">
     <table class="table" id="table">
       <thead>
@@ -25,7 +25,7 @@
 
 <script>
 import axios from 'axios';
-import config from '/detailView.config'
+import config from '../../detailView.config'
 
 export default {
   name: 'DetailView',
