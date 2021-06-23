@@ -5,10 +5,13 @@ import DetailView from '../components/DetailView.vue'
 const routes = [
   {
     path: '/',
-    redirect: '/search/'
+    redirect: '/search/stelle/'
+  },{
+    path: '/search/',
+    redirect: '/search/stelle/'
   },
   {
-    path: '/search/:search?',
+    path: '/search/:type/:search?',
     name: 'Search',
     component: Search,
     props: true,

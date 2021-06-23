@@ -40,6 +40,12 @@ export default {
 }
 </script>
 
+<style scoped>
+  th {
+    border-top: 0;
+  }
+</style>
+
 <i18n>
 {
   "en": {

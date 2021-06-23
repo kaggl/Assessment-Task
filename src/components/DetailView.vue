@@ -14,6 +14,7 @@
         </tr>
       </tbody>
     </table>
+    <visualization :graph="graph" height="500" />
     <div class="buttonContainer">
       <button class="btn btn-primary" @click="fullObject =! fullObject">{{ fullObject ? $t('hideJson') : $t('showJson') }}</button>
     </div>
@@ -25,7 +26,9 @@
 
 <script>
 import axios from 'axios';
-import config from '../../detailView.config'
+import config from '../../detailView.config';
+
+import Visualization from './Visualization2D';
 
 export default {
   name: 'DetailView',
@@ -33,7 +36,18 @@ export default {
     return {
       detailObject: {},
       fullObject: false,
+      graph: {
+        "nodes": [],
+        "edges": [],
+        "types": {
+          "nodes": [],
+          "edges": []
+        }
+      },
     };
+  },
+  components: {
+    Visualization,
   },
   methods: {
     getDetails(id) {
@@ -45,12 +59,13 @@ export default {
       .then((res) => {
         console.log('Stelle', res.data);
         this.detailObject = res.data;
-        this.detailObject.autor = []
+        this.detailObject.autor = [];
+        this.detailObject.autorLocale = [];
         const authorUrls = this.detailObject.text.autor;
         for (let i = 0; i < authorUrls.length; i += 1) {
           axios(authorUrls[i])
           .then((res) => {
-            console.log('Autor', res.data);
+            // console.log('Autor', res.data);
             this.detailObject.autorLocale.push({
               de: res.data.name,
               en: res.data.name_en,
@@ -64,6 +79,20 @@ export default {
             console.log(err);
           });
         }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    },
+    getKeywordGraph(id) {
+      axios(`https://mmp.acdh-dev.oeaw.ac.at/archiv/keyword-data/`, {
+        params: {
+          rvn_stelle_key_word_keyword: id,
+        }
+      })
+      .then(res => {
+        // console.log('res', res.data);
+        this.graph = res.data;
       })
       .catch((err) => {
         console.log(err);
@@ -93,7 +122,6 @@ export default {
         if (retObj[authorLocale][i].includes('https://')) {
           axios(retObj[authorLocale][i])
           .then((res) => {
-            console.log('Autor:', res.data);
             retObj[authorLocale][i] = this.getLocaleAuthor(res.data);
           })
           .catch((error) => {
@@ -106,20 +134,26 @@ export default {
       retObj[keywordsLocale] = retObj[keywordsLocale].map(x => x.stichwort);
       return retObj;
     },
+    graphWidth() {
+      console.log('refs', this.$refs);
+      return this.$refs.table?.width;
+    }
   },
   mounted() {
-    console.log('config', config);
-    this.getDetails(this.$route.params.id)
+    // console.log('config', config);
+    this.getDetails(this.$route.params.id);
+    this.getKeywordGraph(this.$route.params.id);
   }
 }
 </script>
 
-<style lang="css" scoped>
+<style scoped>
   div {
     text-align: left;
   }
   .buttonContainer {
     text-align: center;
+    margin: 20px 0;
   }
   pre {
     max-width: 100vw;overflow-x: auto;

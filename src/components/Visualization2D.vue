@@ -1,18 +1,15 @@
 <template>
-  <div id="visWrapper">
-  </div>
+  <div ref="visWrapper" class="visualization" />
 </template>
 
 <script>
 import ForceGraph from 'force-graph';
-
 import testGraph from '@/assets/testGraph.json'
 
 export default {
   name: 'Visualization',
   data() {
     return {
-      graphRender: ForceGraph(),
     };
   },
   props: {
@@ -32,7 +29,10 @@ export default {
       type: Boolean,
       default: false,
     }, // TODO
-    width: Number,
+    width: {
+      type: String,
+    },
+    height: String,
 
   },
   methods: {
@@ -45,7 +45,7 @@ export default {
       return retObj;
     },
     addColorAndType(arr, typeArr) {
-      console.log('typeArr', typeArr, 'arr', arr);
+      // console.log('typeArr', typeArr, 'arr', arr);
       arr = arr.map(node => {
         const nodeType = typeArr.filter(type => type.id == node.type)[0];
         if (nodeType) node.color = nodeType.color;
@@ -54,16 +54,16 @@ export default {
       return arr;
     }
   },
-  mounted() {
-    console.log(testGraph);
-    const data = this.graph || testGraph;
-    const graphDom = this.graphRender(document.getElementById('visWrapper'))
+  updated() {
+    const data = this.graph;
+    console.log(data);
+    const graphDom = ForceGraph()(this.$refs.visWrapper);
 
-    if (this.height) graphDom.height(this.height);
-    if (this.width) graphDom.width(this.width);
 
     graphDom
       .nodeLabel('label')
+      .height(this.height|| this.$refs.visWrapper.clientHeight)
+      .width(this.width || this.$refs.visWrapper.clientWidth)
       .backgroundColor(this.backgroundColor || null)
       .dagMode(this.dagMode)
       .onNodeClick(this.onNodeClick)
@@ -71,9 +71,14 @@ export default {
       .onEngineTick(this.onEngineEnd)
       .onZoom(this.onZoom)
       .graphData(this.transformedData(data));
+
+      // console.log('wrapper', this.$refs.visWrapper);
   },
 }
 </script>
-
-<style lang="css" scoped>
+<style scoped>
+  .visualization {
+    border: solid 1px rgb(222, 226, 230);
+    border-radius: 4px;
+  }
 </style>

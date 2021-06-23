@@ -2,8 +2,9 @@
   <div class="container">
     <div class="row">
       <div class="search input-group mb-3 col-md-6 offset-md-3">
-        <input type="text" :placeholder="$t('stelle')" @keyup.enter="enterQuery" v-model="input" class="form-control" aria-describedby="basic-addon1">
-        <input type="text" placeholder="Use Case" @keyup.enter="enterQuery" v-if="advanced" v-model="useCase" class="form-control" aria-describedby="basic-addon1">
+        <input type="text" :placeholder="$t('keywords')" @keyup.enter="enterQuery" v-if="type == 'keyword'" v-model="keyInput" class="form-control" aria-describedby="basic-addon1">
+        <input type="text" :placeholder="$t('stelle')" @keyup.enter="enterQuery" v-if="type == 'stelle'" v-model="input" class="form-control" aria-describedby="basic-addon1">
+        <input type="text" placeholder="Use Case" @keyup.enter="enterQuery" v-if="advanced && type == 'stelle'" v-model="useCase" class="form-control" aria-describedby="basic-addon1">
         <div class="input-group-prepend">
           <button class="btn btn-primary" @click="enterQuery"  type="button">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
@@ -12,7 +13,7 @@
           </button>
         </div>
       </div>
-      <div class="col-md-2">
+      <div class="col-md-2" v-if="type == 'stelle'">
         <div class="form-check form-switch">
           <button class="btn">
             <input class="form-check-input" type="checkbox" id="checkbox" v-model="advanced">
@@ -23,23 +24,40 @@
         </div>
       </div>
     </div>
-    <hr />
+    <ul class="nav nav-tabs">
+      <li class="nav-item">
+        <router-link
+          :class="{ active: type == 'stelle' }"
+          class="nav-link"
+          :to="{ name: 'Search', params: { type: 'stelle', search: input }}">
+            {{ $t('datatable') }}
+        </router-link>
+      </li>
+      <li class="nav-item">
+        <router-link
+          :class="{ active: type == 'keyword' }"
+          class="nav-link"
+          :to="{ name: 'Search', params: { type: 'keyword', search: input }}">
+            {{ $t('visualization') }}
+        </router-link>
+      </li>
+    </ul>
+    <br />
     <p>
       <span v-if="init">{{ $t('query') }}</span>
       <span v-else-if="loading">{{ $t('loading') }}...</span>
-      <span v-else-if="count">{{ count }} {{ $t('results')}} {{ parseInt(offset) + 1 }}-{{ (parseInt(offset) + limit) > count ? count : (parseInt(offset) + limit) }}</span>
+      <span v-else-if="count && type == 'stelle'">{{ count }} {{ $t('results')}} {{ parseInt(offset) + 1 }}-{{ (parseInt(offset) + limit) > count ? count : (parseInt(offset) + limit) }}</span>
+      <span v-else-if="keyResults.nodes.length && type == 'keyword'">{{ $t('keyResults', { nodes: keyResults.nodes.length, edges: keyResults.edges.length })}}</span>
       <span v-else>{{ $t('noResults') }}</span>
     </p>
-    <p>
+    <p v-if="type == 'stelle'">
       <button class="btn btn-outline-primary navButton" :disabled="!previous" @click="send(previous)">{{ $t('previous') }}</button>
       <label for="limit">{{ $t('resultsperPage') }}:</label>
       <input type="number" id="limit" v-model="limitField" class="form-control limit" />
       <button class="btn btn-outline-primary navButton" :disabled="!next" @click="send(next)">{{ $t('next') }}</button>
     </p>
-    <!-- >
-      <visualization2D />
-    -->
-    <data-table :entries="results" :key="renderKey" />
+    <visualization v-if="type == 'keyword'" :graph="keyResults" height="500" />
+    <data-table v-else :entries="results" :key="renderKey" />
   </div>
 </template>
 
@@ -47,7 +65,7 @@
 import axios from 'axios';
 
 import DataTable from './DataTable';
-import Visualization2D from './Visualization2D';
+import Visualization from './Visualization2D';
 
 export default {
   name: 'Search',
@@ -56,6 +74,14 @@ export default {
       input: '',
       useCase: '',
       results: [],
+      keyResults: {
+        "nodes": [],
+        "edges": [],
+        "types": {
+          "nodes": [],
+          "edges": []
+        }
+      },
       loading: false,
       count: 0,
       init: true,
@@ -65,6 +91,7 @@ export default {
       limit: 20,
       limitField: 20,
       renderKey: 0,
+      keywordKey: 0,
       advanced: false,
     };
   },
@@ -76,12 +103,11 @@ export default {
   },
   components: {
     DataTable,
-    Visualization2D,
+    Visualization,
   },
   methods: {
     send(url) {
       const urlProvided = typeof url == 'string';
-      this.init = false;
       this.loading = true;
       if (urlProvided) {
         console.log(url);
@@ -142,20 +168,54 @@ export default {
         this.loading = false;
       });
     },
+    keywordSend() {
+      this.loading = true;
+
+      axios('https://mmp.acdh-dev.oeaw.ac.at/archiv/keyword-data/', {
+        params: {
+          stichwort: this.keyInput,
+          rvn_stelle_key_word_keyword__text__autor: this.keyInput,
+          rvn_stelle_key_word_keyword	: this.keyInput,
+          rvn_stelle_key_word_keyword__text: this.keyInput,
+          rvn_stelle_key_word_keyword__text__autor__ort: this.keyInput,
+        },
+      })
+      .then(res => {
+        console.log(res.data);
+        this.keyResults = res.data;
+        this.loading = false;
+      });
+    },
     enterQuery() {
-      this.$router.push({ name: 'Search', params: {
-        search: this.input,
-        offsetProp: this.offset,
-      } });
-      this.send()
+      this.$router.push({
+        name: 'Search',
+        params: {
+          type: this.type,
+          search: this.type == 'stelle' ? this.input : this.keyInput,
+          offsetProp: this.offset,
+        }
+      });
+
+      if (this.type == 'stelle') this.send();
+      else this.keywordSend();
+    },
+  },
+  computed: {
+    type() {
+      return this.$route.params.type
     },
   },
   mounted() {
-    console.log(Visualization2D);
     if (this.offsetProp) this.offset = parseInt(this.offsetProp);
     if (this.$route.params.search) {
-      this.input = this.$route.params.search;
-      this.send();
+      this.init = false;
+      if (this.type == 'stelle') {
+        this.input = this.$route.params.search;
+        this.send();
+      } else {
+        this.keyInput = this.$route.params.search;
+        this.keywordSend();
+      }
     }
   },
 };
@@ -172,6 +232,10 @@ export default {
   .inline-link {
     padding: 5px;
   }
+  .keywordWrapper {
+    width: 100%;
+    height: 500px;
+  }
   label {
     margin-right: 5px;
   }
@@ -181,25 +245,33 @@ export default {
 {
   "en": {
     "stelle": "Passage",
+    "keywords": "Keywords",
     "advancedSearch": "Advanced Search",
     "query": "Please insert search query",
     "loading": "loading",
     "results": "results found, showing",
+    "keyResults": "{nodes} nodes and {edges} edges found!",
     "noResults": "No results",
     "resultsperPage": "Results per page",
     "previous": "Previous",
     "next": "Next",
+    "datatable": "Data Table",
+    "visualization": "Visualization",
   },
   "de": {
     "stelle": "Stelle",
+    "keywords": "Stichwörter",
     "advancedSearch": "Erweiterte Suche",
     "query": "Bitte Suchbegriff eingeben",
     "loading": "lädt",
     "results": "Ergebnisse gefunden, zeige",
+    "keyResults": "{nodes} Knoten und {edges} Verbindungen gefunden!",
     "noResults": "Keine Suchergebnisse",
     "resultsperPage": "Ergebnisse pro Seite",
     "previous": "Vorherige",
     "next": "Nächste",
+    "datatable": "Tabelle",
+    "visualization": "Visualisierung",
   }
 }
 </i18n>
