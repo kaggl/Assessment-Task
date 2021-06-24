@@ -15,6 +15,7 @@
     "axios": "0.21.1",
     "force-graph": "^1.41.2",
     "vue": "^3.1.1",
+    "vue-bootstrap-typeahead": "^0.2.6",
     "vue-i18n": "^9.1.0",
     "vue-router": "^4.0.0-0"
   },

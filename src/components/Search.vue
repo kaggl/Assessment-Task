@@ -4,7 +4,17 @@
       <div class="search input-group mb-3 col-md-6 offset-md-3">
         <input type="text" :placeholder="$t('keywords')" @keyup.enter="enterQuery" v-if="type == 'keyword'" v-model="keyInput" class="form-control" aria-describedby="basic-addon1">
         <input type="text" :placeholder="$t('stelle')" @keyup.enter="enterQuery" v-if="type == 'stelle'" v-model="input" class="form-control" aria-describedby="basic-addon1">
-        <input type="text" placeholder="Use Case" @keyup.enter="enterQuery" v-if="advanced && type == 'stelle'" v-model="useCase" class="form-control" aria-describedby="basic-addon1">
+        <vue-bootstrap-typeahead
+          type="text"
+          placeholder="Use Case"
+          @keyup="getKeywords"
+          @keyup.enter="enterQuery"
+          :data="keywordAuto"
+          v-if="advanced && type == 'stelle'"
+          v-model="useCase"
+          class="form-control"
+          aria-describedby="basic-addon1"
+        />
         <div class="input-group-prepend">
           <button class="btn btn-primary" @click="enterQuery"  type="button">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
@@ -63,6 +73,7 @@
 
 <script>
 import axios from 'axios';
+import VueBootstrapTypeahead from 'vue-bootstrap-typeahead';
 
 import DataTable from './DataTable';
 import Visualization from './Visualization2D';
@@ -72,7 +83,9 @@ export default {
   data() {
     return {
       input: '',
+      keyInput: '',
       useCase: '',
+      keywordAuto: [],
       results: [],
       keyResults: {
         "nodes": [],
@@ -104,6 +117,7 @@ export default {
   components: {
     DataTable,
     Visualization,
+    VueBootstrapTypeahead,
   },
   methods: {
     send(url) {
@@ -184,6 +198,10 @@ export default {
         console.log(res.data);
         this.keyResults = res.data;
         this.loading = false;
+      })
+      .catch((error) => {
+        console.log(error);
+        this.loading = false;
       });
     },
     enterQuery() {
@@ -195,9 +213,25 @@ export default {
           offsetProp: this.offset,
         }
       });
+      this.init = false;
 
       if (this.type == 'stelle') this.send();
       else this.keywordSend();
+    },
+    getKeywords(str) {
+      axios('https://mmp.acdh-dev.oeaw.ac.at/archiv-ac/usecase-autocomplete/', {
+        params: {
+          q: this.useCase,
+        }
+      })
+      .then(res => {
+        console.log(res.data);
+        this.keywordAuto = this.keywordAuto.concat(res.data.results.map(x => x.selected_text));
+        this.keywordAuto = [...new Set(this.keywordAuto)];
+      })
+      .catch((error) => {
+        console.log(error);
+      });
     },
   },
   computed: {
@@ -220,7 +254,7 @@ export default {
   },
 };
 </script>
-<style scoped>
+<style>
   .navButton {
     min-width: 100px;
     margin: 0 10px;
@@ -235,6 +269,11 @@ export default {
   .keywordWrapper {
     width: 100%;
     height: 500px;
+  }
+  input[type='search'] {
+    border: 0px;
+    height: 24px;
+    padding: 0px;
   }
   label {
     margin-right: 5px;

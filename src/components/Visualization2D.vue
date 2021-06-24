@@ -18,7 +18,17 @@ export default {
       type: String,
       default: null,
     },
-    graph: Object,
+    graph: {
+      type: Object,
+      default: {
+        "nodes": [],
+        "edges": [],
+        "types": {
+          "nodes": [],
+          "edges": []
+        }
+      }
+    },
     highlightedNodeIds: Set, // TODO
     onNodeClick: Function,
     onSimulationEnd: Function,
@@ -52,27 +62,28 @@ export default {
         return node;
       });
       return arr;
+    },
+    setCanvas() {
+      const graphDom = ForceGraph()(this.$refs.visWrapper);
+
+      graphDom
+        .nodeLabel('label')
+        .height(this.height|| this.$refs.visWrapper.clientHeight)
+        .width(this.width || this.$refs.visWrapper.clientWidth)
+        .backgroundColor(this.backgroundColor || null)
+        .dagMode(this.dagMode)
+        .onNodeClick(this.onNodeClick)
+        .onEngineStop(this.onSimulationEnd)
+        .onEngineTick(this.onEngineEnd)
+        .onZoom(this.onZoom)
+        .graphData(this.transformedData(this.graph))
+        .cooldownTicks(100)
+
+        graphDom.onEngineStop(() => graphDom.zoomToFit(400));
     }
   },
   updated() {
-    const data = this.graph;
-    console.log(data);
-    const graphDom = ForceGraph()(this.$refs.visWrapper);
-
-
-    graphDom
-      .nodeLabel('label')
-      .height(this.height|| this.$refs.visWrapper.clientHeight)
-      .width(this.width || this.$refs.visWrapper.clientWidth)
-      .backgroundColor(this.backgroundColor || null)
-      .dagMode(this.dagMode)
-      .onNodeClick(this.onNodeClick)
-      .onEngineStop(this.onSimulationEnd)
-      .onEngineTick(this.onEngineEnd)
-      .onZoom(this.onZoom)
-      .graphData(this.transformedData(data));
-
-      // console.log('wrapper', this.$refs.visWrapper);
+    this.setCanvas();
   },
 }
 </script>
