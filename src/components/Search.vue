@@ -196,6 +196,7 @@ export default {
 
       axios('https://mmp.acdh-dev.oeaw.ac.at/archiv/keyword-data/', {
         params: {
+          stichwort_lookup: 'icontains',
           stichwort: this.keyInput,
           rvn_stelle_key_word_keyword__text__autor: this.keyInput,
           rvn_stelle_key_word_keyword	: this.keyInput,
