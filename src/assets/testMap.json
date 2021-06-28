@@ -1,0 +1,22 @@
+{
+  "type": "FeatureCollection",
+  "count": 1,
+  "next": null,
+  "previous": null,
+  "features": [{
+    "type": "Feature",
+    "geometry": {
+      "type": "Polygon",
+      "coordinates": [
+        [
+          [19.944305, 41.288126],
+          [19.812469, 41.168317],
+          [20.1091, 41.164182],
+          [19.944305, 41.288126]
+        ]
+      ]
+    },
+    "bbox": [19.812469, 41.164182, 20.1091, 41.288126],
+    "properties": {}
+  }]
+}

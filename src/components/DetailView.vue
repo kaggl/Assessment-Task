@@ -1,5 +1,10 @@
 <template>
   <div class="container">
+    <!--
+      <div class="leaflet">
+        <leaflet />
+      </div>
+    -->
     <table class="table" id="table">
       <thead>
         <tr>
@@ -29,6 +34,7 @@ import axios from 'axios';
 
 import config from '/detailView.config';
 import Visualization from './Visualization2D';
+import Leaflet from './Leaflet';
 
 export default {
   name: 'DetailView',
@@ -48,8 +54,12 @@ export default {
   },
   components: {
     Visualization,
+    Leaflet,
   },
   methods: {
+    getLocaleKeyFromEn(key) {
+      return config.attributes.find(x => x.name.en == key).name[this.$i18n.locale];
+    },
     getDetails(id) {
       axios(`https://mmp.acdh-dev.oeaw.ac.at/api/stelle/${id}`, {
         params: {
@@ -98,15 +108,15 @@ export default {
         console.log(err);
       });
     },
-    getLocaleKeyFromEn(key) {
-      return config.attributes.find(x => x.name.en == key).name[this.$i18n.locale];
-    },
     getLocaleAuthor(obj) {
       if (this.$i18n.locale == 'de' || !obj.[`name_${this.$i18n.locale}`]) return obj.name;
       else return obj.[`name_${this.$i18n.locale}`];
     },
   },
   computed: {
+    graphWidth() {
+      return this.$refs.table?.width;
+    },
     filteredObject() {
       const retObj = {};
       const obj = this.detailObject;
@@ -134,10 +144,6 @@ export default {
       retObj[keywordsLocale] = retObj[keywordsLocale].map(x => x.stichwort);
       return retObj;
     },
-    graphWidth() {
-      console.log('refs', this.$refs);
-      return this.$refs.table?.width;
-    }
   },
   mounted() {
     // console.log('config', config);
@@ -148,12 +154,15 @@ export default {
 </script>
 
 <style scoped>
-  div {
-    text-align: left;
-  }
   .buttonContainer {
     text-align: center;
     margin: 20px 0;
+  }
+  .leaflet {
+    height: 500px;
+  }
+  div {
+    text-align: left;
   }
   pre {
     max-width: 100vw;overflow-x: auto;

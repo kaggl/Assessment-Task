@@ -35,7 +35,7 @@ export default {
   methods: {
     localeAuthors(arr) {
       return arr.map(x => x[this.$i18n.locale]);
-    }
+    },
   },
 }
 </script>
