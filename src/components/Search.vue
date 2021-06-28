@@ -9,11 +9,13 @@
           placeholder="Use Case"
           @keyup="getKeywords"
           @keyup.enter="enterQuery"
-          :data="keywordAuto"
+          :data="keywordArr"
           v-if="advanced && type == 'stelle'"
           v-model="useCase"
           class="form-control"
           aria-describedby="basic-addon1"
+          showAllResults="true"
+          ref="useCase"
         />
         <div class="input-group-prepend">
           <button class="btn btn-primary" @click="enterQuery"  type="button">
@@ -85,7 +87,8 @@ export default {
       input: '',
       keyInput: '',
       useCase: '',
-      keywordAuto: [],
+      keywordArr: [],
+      keywordObj: [],
       results: [],
       keyResults: {
         "nodes": [],
@@ -121,6 +124,7 @@ export default {
   },
   methods: {
     send(url) {
+      console.log('ref', this.$refs.useCase?.inputValue, this.useCase);
       const urlProvided = typeof url == 'string';
       this.loading = true;
       if (urlProvided) {
@@ -138,7 +142,12 @@ export default {
         zitat: this.input,
         limit: this.limit,
       }
-      if (this.advanced && this.useCase) params.use_case = this.useCase;
+
+      console.log(this.advanced, this.useCaseInput);
+
+      if (this.advanced && this.useCaseInput) params.use_case = this.getKeywordIdfromText(this.useCaseInput);
+
+      console.log('params', params);
 
       (urlProvided ? axios(url) : axios('https://mmp.acdh-dev.oeaw.ac.at/api/stelle/', { params }))
       .then((res) => {
@@ -158,7 +167,7 @@ export default {
 
             axios(authorArray[j])
             .then(res => {
-              console.log('Autor', res.data);
+              // console.log('Autor', res.data);
               this.results[i].autorLocale.push({
                 de: res.data.name,
                 en: res.data.name_en,
@@ -226,17 +235,26 @@ export default {
       })
       .then(res => {
         console.log(res.data);
-        this.keywordAuto = this.keywordAuto.concat(res.data.results.map(x => x.selected_text));
-        this.keywordAuto = [...new Set(this.keywordAuto)];
+        this.keywordObj = res.data.results;
+        this.keywordArr = this.keywordArr.concat(this.keywordObj.map(x => x.selected_text));
+
+        this.keywordObj = [...new Set(this.keywordObj)];
+        this.keywordArr = [...new Set(this.keywordArr)];
       })
       .catch((error) => {
         console.log(error);
       });
     },
+    getKeywordIdfromText(str) {
+      return this.keywordObj.filter(x => x.selected_text == this.useCaseInput)[0]?.id;
+    },
   },
   computed: {
     type() {
       return this.$route.params.type
+    },
+    useCaseInput() {
+      return this.$refs.useCase?.inputValue;
     },
   },
   mounted() {

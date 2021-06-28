@@ -26,8 +26,8 @@
 
 <script>
 import axios from 'axios';
-import config from '../../detailView.config';
 
+import config from '/detailView.config';
 import Visualization from './Visualization2D';
 
 export default {
@@ -41,8 +41,8 @@ export default {
         "edges": [],
         "types": {
           "nodes": [],
-          "edges": []
-        }
+          "edges": [],
+        },
       },
     };
   },
