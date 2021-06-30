@@ -4,7 +4,6 @@
 
 <script>
 import ForceGraph from 'force-graph';
-import testGraph from '@/assets/testGraph.json'
 
 export default {
   name: 'Visualization',

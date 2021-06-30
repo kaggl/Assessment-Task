@@ -37,6 +37,13 @@ module.exports = {
     },
     {
       name: {
+        en: 'Place',
+        de: 'Ort',
+      },
+      attr: 'text.ort',
+    },
+    {
+      name: {
         en: 'Edition',
         de: 'Auflage',
       },

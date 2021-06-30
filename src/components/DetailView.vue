@@ -1,10 +1,5 @@
 <template>
   <div class="container">
-    <!--
-      <div class="leaflet">
-        <leaflet />
-      </div>
-    -->
     <table class="table" id="table">
       <thead>
         <tr>
@@ -19,7 +14,14 @@
         </tr>
       </tbody>
     </table>
-    <visualization :graph="graph" height="500" />
+    <div class="row">
+      <div class="leaflet col-sm-6" v-if="geoJson.count && geoJson.features[0].geometry">
+        <leaflet :data="geoJson" />
+      </div>
+      <div class="visualization col-sm-6">
+        <visualization :graph="graph" height="500" />
+      </div>
+    </div>
     <div class="buttonContainer">
       <button class="btn btn-primary" @click="fullObject =! fullObject">{{ fullObject ? $t('hideJson') : $t('showJson') }}</button>
     </div>
@@ -50,6 +52,10 @@ export default {
           "edges": [],
         },
       },
+      geoJson: {
+        "type": "FeatureCollection",
+        "features": []
+      },
     };
   },
   components: {
@@ -69,33 +75,13 @@ export default {
       .then((res) => {
         console.log('Stelle', res.data);
         this.detailObject = res.data;
-        this.detailObject.autor = [];
-        this.detailObject.autorLocale = [];
-        const authorUrls = this.detailObject.text.autor;
-        for (let i = 0; i < authorUrls.length; i += 1) {
-          axios(authorUrls[i])
-          .then((res) => {
-            // console.log('Autor', res.data);
-            this.detailObject.autorLocale.push({
-              de: res.data.name,
-              en: res.data.name_en,
-              fr: res.data.name_fr,
-              gr: res.data.name_gr,
-              it: res.data.name_it,
-              lat: res.data.name_lat,
-            });
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-        }
       })
       .catch((err) => {
         console.log(err);
       });
     },
     getKeywordGraph(id) {
-      axios(`https://mmp.acdh-dev.oeaw.ac.at/archiv/keyword-data/`, {
+      axios('https://mmp.acdh-dev.oeaw.ac.at/archiv/keyword-data/', {
         params: {
           rvn_stelle_key_word_keyword: id,
         }
@@ -108,10 +94,25 @@ export default {
         console.log(err);
       });
     },
-    getLocaleAuthor(obj) {
-      if (this.$i18n.locale == 'de' || !obj.[`name_${this.$i18n.locale}`]) return obj.name;
+    getLocaleName(obj) {
+      if (this.$i18n.locale == 'de' || !obj.[`name_${this.$i18n.locale}`]) return obj.name_antik || obj.name;
       else return obj.[`name_${this.$i18n.locale}`];
     },
+    getGeoJson(id) {
+      axios('https://mmp.acdh-dev.oeaw.ac.at/api/spatialcoverage/', {
+        params: {
+          format: 'json',
+          stelle: id,
+        }
+      })
+      .then(res => {
+        console.log('geojson', res.data);
+        this.geoJson = res.data;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    }
   },
   computed: {
     graphWidth() {
@@ -132,7 +133,20 @@ export default {
         if (retObj[authorLocale][i].includes('https://')) {
           axios(retObj[authorLocale][i])
           .then((res) => {
-            retObj[authorLocale][i] = this.getLocaleAuthor(res.data);
+            retObj[authorLocale][i] = this.getLocaleName(res.data);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+        }
+      }
+
+      const placeLocale = this.getLocaleKeyFromEn('Place');
+      for (let i = 0; i < retObj[placeLocale].length; i += 1) {
+        if (retObj[placeLocale][i].includes('https://')) {
+          axios(retObj[placeLocale][i])
+          .then((res) => {
+            retObj[placeLocale][i] = this.getLocaleName(res.data);
           })
           .catch((error) => {
             console.log(error);
@@ -142,13 +156,19 @@ export default {
 
       const keywordsLocale = this.getLocaleKeyFromEn('Keywords');
       retObj[keywordsLocale] = retObj[keywordsLocale].map(x => x.stichwort);
+      // console.log('filteredObject', retObj);
       return retObj;
     },
   },
   mounted() {
     // console.log('config', config);
-    this.getDetails(this.$route.params.id);
-    this.getKeywordGraph(this.$route.params.id);
+    const stelleId = this.$route.params.id;
+
+    console.log('stelle', stelleId);
+
+    this.getDetails(stelleId);
+    this.getKeywordGraph(stelleId);
+    this.getGeoJson(stelleId);
   }
 }
 </script>
