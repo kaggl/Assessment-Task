@@ -9,8 +9,8 @@
           {{ $t('lang') }}
         </button>
         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-          <a class="dropdown-item" href="#" @click="$i18n.locale = 'en'">English</a>
-          <a class="dropdown-item" href="#" @click="$i18n.locale = 'de'">Deutsch</a>
+          <a class="dropdown-item" href="#" @click.prevent="$i18n.locale = 'en'">English</a>
+          <a class="dropdown-item" href="#" @click.prevent="$i18n.locale = 'de'">Deutsch</a>
         </div>
       </div>
       <a href="https://github.com/kaggl/Assessment-Task">
@@ -33,8 +33,13 @@ export default {
       },
     };
   },
-  mounted() {
-    console.log('$t', this.$i18n.locale);
+  watch: {
+    $i18n: {
+     handler(val){
+       console.log(val.locale);
+     },
+     deep: true
+  }
   }
 }
 </script>

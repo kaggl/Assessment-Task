@@ -15,7 +15,7 @@
       </tbody>
     </table>
     <div class="row">
-      <div class="leaflet col-sm-6" v-if="geoJson.count && geoJson.features[0].geometry">
+      <div class="leaflet col-sm-6" v-if="geoDataExists">
         <leaflet :data="geoJson" />
       </div>
       <div class="visualization col-sm-6">
@@ -117,6 +117,9 @@ export default {
   computed: {
     graphWidth() {
       return this.$refs.table?.width;
+    },
+    geoDataExists() {
+      return this.geoJson.count && this.geoJson.features[0].geometry;
     },
     filteredObject() {
       const retObj = {};

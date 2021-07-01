@@ -44,7 +44,7 @@ export default {
   },
   computed: {
     center() {
-      if (! this.data?.count) return [[0, 0], [0, 0]];
+      if (!this.data?.count) return [[0, 0], [0, 0]];
 
       console.log('features', this.data.features);
 
