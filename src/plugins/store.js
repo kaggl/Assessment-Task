@@ -5,7 +5,14 @@ export default createStore({
     lang: 'en',
     results: {
       passage: [],
-      keyword: [],
+      keyword: {
+        "nodes": [],
+        "edges": [],
+        "types": {
+          "nodes": [],
+          "edges": []
+        }
+      },
       map: [],
     },
   },

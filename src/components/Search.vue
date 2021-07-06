@@ -77,7 +77,7 @@
       <span v-if="init">{{ $t('query') }}</span>
       <span v-else-if="loading">{{ $t('loading') }}...</span>
       <span v-else-if="count && type == 'stelle'">{{ count }} {{ $t('results')}} {{ parseInt(offset) + 1 }}-{{ (parseInt(offset) + limit) > count ? count : (parseInt(offset) + limit) }}</span>
-      <span v-else-if="keyResults.nodes.length && type == 'keyword'">{{ $t('keyResults', { nodes: keyResults.nodes.length, edges: keyResults.edges.length })}}</span>
+      <span v-else-if="getResults('keyword').nodes.length && type == 'keyword'">{{ $t('keyResults', { nodes: getResults('keyword').nodes.length, edges: getResults('keyword').edges.length })}}</span>
       <span v-else>{{ $t('noResults') }}</span>
     </p>
     <p v-if="type == 'stelle'">
@@ -86,9 +86,9 @@
       <input type="number" id="limit" v-model="limitField" class="form-control limit" />
       <button class="btn btn-outline-primary navButton" :disabled="!next" @click="send(next)">{{ $t('next') }}</button>
     </p>
-    <visualization v-if="type == 'keyword'" :graph="keyResults" height="500" />
+    <vis-component v-if="type == 'keyword'" />
     <leaflet v-if="type == 'map'" :data="mapResults" />
-    <data-table v-if="type == 'stelle'" :key="renderKey" />
+    <data-table v-if="type == 'stelle'" />
   </div>
 </template>
 
@@ -98,7 +98,7 @@ import VueBootstrapTypeahead from 'vue-bootstrap-typeahead';
 import { mapGetters, mapMutations } from 'vuex';
 
 import DataTable from './DataTable';
-import Visualization from './Visualization2D';
+import VisComponent from './VisComponent';
 import Leaflet from './Leaflet';
 
 export default {
@@ -112,15 +112,6 @@ export default {
       keywordArr: [],
       keywordObj: [],
       keywordType: '',
-      results: [],
-      keyResults: {
-        "nodes": [],
-        "edges": [],
-        "types": {
-          "nodes": [],
-          "edges": []
-        }
-      },
       mapResults: [],
       loading: false,
       count: 0,
@@ -129,7 +120,6 @@ export default {
       previous: null,
       limit: 20,
       limitField: 20,
-      renderKey: 0,
       advanced: false,
     };
   },
@@ -141,7 +131,7 @@ export default {
   },
   components: {
     DataTable,
-    Visualization,
+    VisComponent,
     Leaflet,
     VueBootstrapTypeahead,
   },
@@ -182,7 +172,10 @@ export default {
         console.log(res.data);
         this.count = res.data.count;
         // this.results = res.data.results;
-        this.setResults({name: 'passage', arr: res.data.results});
+        this.setResults({
+          name: 'passage',
+          arr: res.data.results
+        });
         this.next = res.data.next;
         this.previous = res.data.previous;
 
@@ -205,7 +198,6 @@ export default {
               }});
 
               this.loading = false;
-              this.renderKey += 1;
             })
             .catch((error) => {
               console.log(error);
@@ -253,7 +245,10 @@ export default {
       axios('https://mmp.acdh-dev.oeaw.ac.at/archiv/keyword-data/', { params })
       .then(res => {
         console.log(res.data);
-        this.keyResults = res.data;
+        this.setResults({
+          name: 'keyword',
+          arr: res.data
+        });
         this.loading = false;
       })
       .catch((error) => {
