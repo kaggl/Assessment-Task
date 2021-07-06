@@ -51,7 +51,7 @@
         <router-link
           :class="{ active: type == 'stelle' }"
           class="nav-link"
-          :to="{ name: 'Search', params: { type: 'stelle' }}">
+          :to="{ name: 'DataTable' }">
             {{ $t('datatable') }}
         </router-link>
       </li>
@@ -59,7 +59,7 @@
         <router-link
           :class="{ active: type == 'keyword' }"
           class="nav-link"
-          :to="{ name: 'Search', params: { type: 'keyword' }}">
+          :to="{ name: 'VisComponent' }">
             {{ $t('visualization') }}
         </router-link>
       </li>
@@ -67,7 +67,7 @@
         <router-link
           :class="{ active: type == 'map' }"
           class="nav-link"
-          :to="{ name: 'Search', params: { type: 'map' }}">
+          :to="{ name: 'Places' }">
             {{ $t('map') }}
         </router-link>
       </li>
@@ -86,9 +86,7 @@
       <input type="number" id="limit" v-model="limitField" class="form-control limit" />
       <button class="btn btn-outline-primary navButton" :disabled="!next" @click="send(next)">{{ $t('next') }}</button>
     </p>
-    <vis-component v-if="type == 'keyword'" />
-    <leaflet v-if="type == 'map'" :data="mapResults" />
-    <data-table v-if="type == 'stelle'" />
+    <router-view></router-view>
   </div>
 </template>
 
@@ -141,6 +139,14 @@ export default {
       'addAuthorsToPassages',
     ]),
     getIdFromUrl: url => parseInt(url.split('/').filter(x => parseInt(x))[0]),
+    getCompNameFromType(type) {
+      const dict = {
+        stelle: 'DataTable',
+        keyword: 'VisComponent',
+        map: 'Places',
+      }
+      return dict[type];
+    },
     send(url) {
       console.log('ref', this.$refs.useCase?.inputValue, this.useCase);
       const urlProvided = typeof url == 'string';
@@ -276,9 +282,8 @@ export default {
     },
     enterQuery() {
       this.$router.push({
-        name: 'Search',
+        name: this.getCompNameFromType(this.type),
         params: {
-          type: this.type,
           search: this.type == 'stelle' ? this.input : this.keyInput,
           offsetProp: this.offset,
         }
@@ -319,7 +324,8 @@ export default {
       'getResults',
     ]),
     type() {
-      return this.$route.params.type
+      const path = this.$route.fullPath;
+      return path.split('/')[path.indexOf('search') + 1];
     },
     useCaseInput() {
       return this.$refs.useCase?.inputValue;

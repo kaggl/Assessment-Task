@@ -81,6 +81,9 @@ export default {
         graphDom.onEngineStop(() => graphDom.zoomToFit(400));
     }
   },
+  mounted() {
+    this.setCanvas();
+  },
   updated() {
     this.setCanvas();
   },
