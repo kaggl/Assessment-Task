@@ -1,4 +1,4 @@
-import { createI18n } from 'vue-i18n'
+import { createI18n } from 'vue-i18n/dist/vue-i18n.esm-bundler.js';
 
 /**
  * Load locale messages

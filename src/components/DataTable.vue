@@ -24,17 +24,22 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+
 export default {
   name: 'DataTable',
-  props: {
-    entries: {
-      type: Array,
-      required: false,
+  computed: {
+    ...mapGetters([
+      'getResults',
+    ]),
+    entries() {
+      console.log('store passage', this.getResults('passage'));
+      return this.getResults('passage');
     },
   },
   methods: {
     localeAuthors(arr) {
-      return arr.map(x => x[this.$i18n.locale]);
+      return arr ? arr.map(x => x[this.$i18n.locale]) : [];
     },
   },
 }

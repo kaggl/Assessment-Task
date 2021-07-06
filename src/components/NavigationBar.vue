@@ -1,6 +1,6 @@
 <template>
   <nav class="navbar navbar-expand-lg navbar-light">
-    <div class="container">
+    <div class="container" @click="logStore">
       <!-- Your site title as branding in the menu -->
       <router-link to="/search/" class="navbar-brand custom-logo-link" rel="home"><img src="../assets/fundament_logo.svg" class="img-fluid" alt="Your Logo" itemprop="logo"></router-link>
       <router-link to="/search/" class="navbar-brand site-title-with-logo" rel="home" title="Assessment Task">Assessment Task</router-link>
@@ -32,6 +32,11 @@ export default {
         de: 'Deutsch',
       },
     };
+  },
+  methods: {
+    logStore() {
+      console.log(this.$store.state.lang, this.$store.state.results, this.$store);
+    }
   },
   watch: {
     $i18n: {

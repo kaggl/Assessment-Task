@@ -4,6 +4,15 @@ import DetailView from '../components/DetailView.vue'
 
 const routes = [
   {
+    path: '/:locale',
+    component: {
+      template: '<router-view></router-view>',
+    },
+    children: [
+      
+    ],
+  },
+  {
     path: '/',
     redirect: '/search/stelle/'
   },{

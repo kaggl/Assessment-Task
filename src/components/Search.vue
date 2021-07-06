@@ -88,13 +88,14 @@
     </p>
     <visualization v-if="type == 'keyword'" :graph="keyResults" height="500" />
     <leaflet v-if="type == 'map'" :data="mapResults" />
-    <data-table v-if="type == 'stelle'" :entries="results" :key="renderKey" />
+    <data-table v-if="type == 'stelle'" :key="renderKey" />
   </div>
 </template>
 
 <script>
 import axios from 'axios';
 import VueBootstrapTypeahead from 'vue-bootstrap-typeahead';
+import { mapGetters, mapMutations } from 'vuex';
 
 import DataTable from './DataTable';
 import Visualization from './Visualization2D';
@@ -145,6 +146,10 @@ export default {
     VueBootstrapTypeahead,
   },
   methods: {
+    ...mapMutations([
+      'setResults',
+      'addAuthorsToPassages',
+    ]),
     getIdFromUrl: url => parseInt(url.split('/').filter(x => parseInt(x))[0]),
     send(url) {
       console.log('ref', this.$refs.useCase?.inputValue, this.useCase);
@@ -176,30 +181,31 @@ export default {
       .then((res) => {
         console.log(res.data);
         this.count = res.data.count;
-        this.results = res.data.results;
+        // this.results = res.data.results;
+        this.setResults({name: 'passage', arr: res.data.results});
         this.next = res.data.next;
         this.previous = res.data.previous;
 
         if (!this.count) this.loading = false;
-        for (let i = 0; i < this.results.length; i += 1) {
-          this.loading = true;
-          this.results[i].autorLocale = []
-          const authorArray = this.results[i].text.autor;
+        for (let i = 0; i < this.getResults('passage').length; i += 1) {
+          const authorArray = this.getResults('passage')[i].text.autor;
 
           for (let j = 0; j < authorArray.length; j += 1) {
 
             axios(authorArray[j])
             .then(res => {
-              // console.log('Autor', res.data);
-              this.results[i].autorLocale.push({
+              console.log('Autor', res.data);
+              this.addAuthorsToPassages({loc: i, obj: {
                 de: res.data.name,
                 en: res.data.name_en,
                 fr: res.data.name_fr,
                 gr: res.data.name_gr,
                 it: res.data.name_it,
                 lat: res.data.name_lat,
-              });
+              }});
+
               this.loading = false;
+              this.renderKey += 1;
             })
             .catch((error) => {
               console.log(error);
@@ -314,6 +320,9 @@ export default {
     },
   },
   computed: {
+    ...mapGetters([
+      'getResults',
+    ]),
     type() {
       return this.$route.params.type
     },
