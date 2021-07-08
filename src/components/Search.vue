@@ -2,7 +2,7 @@
   <div class="container">
     <div class="row">
       <div class="search input-group mb-3 col-md-6 offset-md-3">
-        <div class="input-group-prepend" v-if="type == 'keyword' && advanced">
+        <div class="input-group-prepend" v-if="type == 'VisComponent' && advanced">
           <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ keywordType ? $t(keywordType) : '' }}</button>
           <div class="dropdown-menu">
             <a class="dropdown-item" @click.prevent="keywordType = undefined" href="#">{{ $t('all') }}</a>
@@ -10,17 +10,17 @@
             <a class="dropdown-item" @click.prevent="keywordType = 'Eigenname'" href="#">{{ $t('Eigenname') }}</a>
           </div>
         </div>
-        <input type="text" :placeholder="$t('keywords')" @keyup.enter="enterQuery" v-if="type == 'keyword'" v-model="keyInput" class="form-control" aria-describedby="basic-addon1">
-        <input type="text" :placeholder="$t('keywords')" @keyup.enter="enterQuery" v-if="type == 'map'" v-model="mapInput" class="form-control" aria-describedby="basic-addon1">
-        <input type="text" :placeholder="$t('stelle')" @keyup.enter="enterQuery" v-if="type == 'stelle'" v-model="input" class="form-control" aria-describedby="basic-addon1">
-        <input type="text" :placeholder="$t('author')" @keyup.enter="enterQuery" v-if="advanced && type == 'keyword'" v-model="keywordAuthor" class="form-control" aria-describedby="basic-addon1">
+        <input type="text" :placeholder="$t('keywords')" @keyup.enter="enterQuery" v-if="type == 'VisComponent'" v-model="keyInput" class="form-control" aria-describedby="basic-addon1">
+        <input type="text" :placeholder="$t('keywords')" @keyup.enter="enterQuery" v-if="type == 'Places'" v-model="mapInput" class="form-control" aria-describedby="basic-addon1">
+        <input type="text" :placeholder="$t('stelle')" @keyup.enter="enterQuery" v-if="type == 'DataTable'" v-model="input" class="form-control" aria-describedby="basic-addon1">
+        <input type="text" :placeholder="$t('author')" @keyup.enter="enterQuery" v-if="advanced && type == 'VisComponent'" v-model="keywordAuthor" class="form-control" aria-describedby="basic-addon1">
         <vue-bootstrap-typeahead
           type="text"
           placeholder="Use Case"
           @keyup="getKeywords"
           @keyup.enter="enterQuery"
           :data="keywordArr"
-          v-if="advanced && type == 'stelle'"
+          v-if="advanced && type == 'DataTable'"
           v-model="useCase"
           class="form-control"
           aria-describedby="basic-addon1"
@@ -35,7 +35,7 @@
           </button>
         </div>
       </div>
-      <div class="col-md-2" v-if="['stelle', 'keyword'].includes(type)">
+      <div class="col-md-2" v-if="['DataTable', 'VisComponent'].includes(type)">
         <div class="form-check form-switch">
           <button class="btn">
             <input class="form-check-input" type="checkbox" id="checkbox" v-model="advanced">
@@ -49,7 +49,7 @@
     <ul class="nav nav-tabs">
       <li class="nav-item">
         <router-link
-          :class="{ active: type == 'stelle' }"
+          :class="{ active: type == 'DataTable' }"
           class="nav-link"
           :to="{ name: 'DataTable' }">
             {{ $t('datatable') }}
@@ -57,7 +57,7 @@
       </li>
       <li class="nav-item">
         <router-link
-          :class="{ active: type == 'keyword' }"
+          :class="{ active: type == 'VisComponent' }"
           class="nav-link"
           :to="{ name: 'VisComponent' }">
             {{ $t('visualization') }}
@@ -65,7 +65,7 @@
       </li>
       <li class="nav-item">
         <router-link
-          :class="{ active: type == 'map' }"
+          :class="{ active: type == 'Places' }"
           class="nav-link"
           :to="{ name: 'Places' }">
             {{ $t('map') }}
@@ -76,11 +76,11 @@
     <p>
       <span v-if="init">{{ $t('query') }}</span>
       <span v-else-if="loading">{{ $t('loading') }}...</span>
-      <span v-else-if="count && type == 'stelle'">{{ count }} {{ $t('results')}} {{ parseInt(offset) + 1 }}-{{ (parseInt(offset) + limit) > count ? count : (parseInt(offset) + limit) }}</span>
-      <span v-else-if="getResults('keyword').nodes.length && type == 'keyword'">{{ $t('keyResults', { nodes: getResults('keyword').nodes.length, edges: getResults('keyword').edges.length })}}</span>
+      <span v-else-if="count && type == 'DataTable'">{{ count }} {{ $t('results')}} {{ parseInt(offset) + 1 }}-{{ (parseInt(offset) + limit) > count ? count : (parseInt(offset) + limit) }}</span>
+      <span v-else-if="getResults('keyword').nodes.length && type == 'VisComponent'">{{ $t('keyResults', { nodes: getResults('keyword').nodes.length, edges: getResults('keyword').edges.length })}}</span>
       <span v-else>{{ $t('noResults') }}</span>
     </p>
-    <p v-if="type == 'stelle'">
+    <p v-if="type == 'DataTable'">
       <button class="btn btn-outline-primary navButton" :disabled="!previous" @click="send(previous)">{{ $t('previous') }}</button>
       <label for="limit">{{ $t('resultsperPage') }}:</label>
       <input type="number" id="limit" v-model="limitField" class="form-control limit" />
@@ -284,7 +284,7 @@ export default {
       this.$router.push({
         name: this.getCompNameFromType(this.type),
         params: {
-          search: this.type == 'stelle' ? this.input : this.keyInput,
+          search: this.type == 'DataTable' ? this.input : this.keyInput,
           offsetProp: this.offset,
         }
       });
@@ -292,9 +292,9 @@ export default {
 
       console.log('keywordAuthor', this.keywordAuthor);
 
-      if (this.type == 'stelle') this.send();
-      else if (this.type == 'map') this.mapSend();
-      else if (this.type == 'keyword' && this.keywordAuthor) this.keywordSendWithAuthor();
+      if (this.type == 'DataTable') this.send();
+      else if (this.type == 'Places') this.mapSend();
+      else if (this.type == 'VisComponent' && this.keywordAuthor) this.keywordSendWithAuthor();
       else this.keywordSend()
     },
     getKeywords() {
@@ -324,8 +324,8 @@ export default {
       'getResults',
     ]),
     type() {
-      const path = this.$route.fullPath;
-      return path.split('/')[path.indexOf('search') + 1];
+      console.log(this.$route);
+      return this.$route.name;
     },
     useCaseInput() {
       return this.$refs.useCase?.inputValue;
@@ -335,7 +335,7 @@ export default {
     if (this.offsetProp) this.offset = parseInt(this.offsetProp);
     if (this.$route.params.search) {
       this.init = false;
-      if (this.type == 'stelle') {
+      if (this.type == 'DataTable') {
         this.input = this.$route.params.search;
         this.send();
       } else {

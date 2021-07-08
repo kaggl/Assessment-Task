@@ -46,12 +46,10 @@ export default {
   },
   methods: {
     transformedData(obj) {
-      const retObj = {};
-
-      retObj.nodes = this.addColorAndType(obj.nodes, obj.types.nodes);
-      retObj.links = this.addColorAndType(obj.edges, obj.types.edges);
-
-      return retObj;
+      return {
+        nodes: this.addColorAndType(obj.nodes, obj.types.nodes),
+        links: this.addColorAndType(obj.edges, obj.types.edges),
+      };
     },
     addColorAndType(arr, typeArr) {
       // console.log('typeArr', typeArr, 'arr', arr);
@@ -76,6 +74,15 @@ export default {
         .onEngineTick(this.onEngineEnd)
         .onZoom(this.onZoom)
         .graphData(this.transformedData(this.graph))
+        /*
+        .nodeCanvasObjectMode(() => 'after')
+        .nodeCanvasObject((node, ctx) => {
+          ctx.font = '3px Sans-Serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(node.label.split(',')[0], node.x, node.y);
+        })
+        */
         .cooldownTicks(100)
 
         graphDom.onEngineStop(() => graphDom.zoomToFit(400));

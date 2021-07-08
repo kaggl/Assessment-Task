@@ -35,7 +35,7 @@
 import axios from 'axios';
 
 import config from '/detailView.config';
-import Visualization from './Visualization2D';
+import VisComponent from './VisComponent';
 import Leaflet from './Leaflet';
 
 export default {
@@ -59,7 +59,7 @@ export default {
     };
   },
   components: {
-    Visualization,
+    VisComponent,
     Leaflet,
   },
   methods: {

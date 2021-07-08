@@ -1,5 +1,6 @@
 module.exports = {
   publicPath: '/Assessment-Task/',
+  runtimeCompiler: true,
 
   pluginOptions: {
     i18n: {
