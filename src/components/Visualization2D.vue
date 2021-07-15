@@ -74,15 +74,14 @@ export default {
         .onEngineTick(this.onEngineEnd)
         .onZoom(this.onZoom)
         .graphData(this.transformedData(this.graph))
-        /*
         .nodeCanvasObjectMode(() => 'after')
-        .nodeCanvasObject((node, ctx) => {
-          ctx.font = '3px Sans-Serif';
+        /*.nodeCanvasObject((node, ctx) => {
+          ctx.font = '2px Sans-Serif';
           ctx.textAlign = 'center';
+          ctx.fillStyle = "white";
           ctx.textBaseline = 'middle';
           ctx.fillText(node.label.split(',')[0], node.x, node.y);
-        })
-        */
+        })*/
         .cooldownTicks(100)
 
         graphDom.onEngineStop(() => graphDom.zoomToFit(400));

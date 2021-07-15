@@ -32,7 +32,7 @@ export default createStore({
       state.results[name.toLowerCase()] = arr;
     },
     setDetails: (state, {name, obj}) => {
-      console.log(state, name, obj);      
+      console.log(state, name, obj);
       state.details[name] = obj;
     },
     addAuthorsToPassages: (state, {loc, obj}) => {

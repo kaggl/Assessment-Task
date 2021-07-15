@@ -154,7 +154,7 @@ export default {
       if (urlProvided) {
         console.log(url);
         const urlParams = new URLSearchParams(url);
-        this.offset = urlParams.get('offset') ? urlParams.get('offset') : 0;
+        this.offset = urlParams.get('offset') || 0;
       } else {
         this.limit = parseInt(this.limitField)
         this.offset = 0;
@@ -169,6 +169,7 @@ export default {
 
       console.log(this.advanced, this.useCaseInput);
 
+      console.log('useCase', this.useCase, this.useCaseInput);
       if (this.advanced && this.useCaseInput) params.use_case = this.getKeywordIdfromText(this.useCaseInput);
 
       console.log('params', params);
@@ -184,34 +185,7 @@ export default {
         });
         this.next = res.data.next;
         this.previous = res.data.previous;
-
-        if (!this.count) this.loading = false;
-        for (let i = 0; i < this.getResults('passage').length; i += 1) {
-          const authorArray = this.getResults('passage')[i].text.autor;
-
-          for (let j = 0; j < authorArray.length; j += 1) {
-
-            axios(authorArray[j])
-            .then(res => {
-              console.log('Autor', res.data);
-              this.addAuthorsToPassages({loc: i, obj: {
-                de: res.data.name,
-                en: res.data.name_en,
-                fr: res.data.name_fr,
-                gr: res.data.name_gr,
-                it: res.data.name_it,
-                lat: res.data.name_lat,
-              }});
-
-              this.loading = false;
-            })
-            .catch((error) => {
-              console.log(error);
-              this.loading = false;
-            });
-
-          }
-        }
+        this.loading = false;
       })
       .catch((error) => {
         console.log(error);

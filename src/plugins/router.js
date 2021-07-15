@@ -1,10 +1,10 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
 
-import Search from '../components/Search';
-import DataTable from '../components/DataTable';
-import VisComponent from '../components/VisComponent';
-import Leaflet from '../components/Leaflet';
-import DetailView from '../components/DetailView';
+import Search from '@/components/Search';
+import DataTable from '@/components/DataTable';
+import VisComponent from '@/components/VisComponent';
+import Leaflet from '@/components/Leaflet';
+import PassageDetails from '@/components/PassageDetails';
 
 const routes = [
   {
@@ -44,7 +44,7 @@ const routes = [
       {
         path: 'detail/:id',
         name: 'Detail',
-        component: DetailView
+        component: PassageDetails,
       }
     ],
   },

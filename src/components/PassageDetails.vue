@@ -23,7 +23,7 @@
       </div>
     </div>
     <div class="buttonContainer">
-      <button class="btn btn-primary" @click="fullObject =! fullObject">{{ fullObject ? $t('hideJson') : $t('showJson') }}</button>
+      <button class="btn btn-primary" @click="fullObject = !fullObject">{{ fullObject ? $t('hideJson') : $t('showJson') }}</button>
     </div>
     <pre v-if="fullObject">
       {{ JSON.stringify(detailObject, null, '\t') }}
@@ -34,12 +34,12 @@
 <script>
 import axios from 'axios';
 
-import config from '/detailView.config';
-import VisComponent from './VisComponent';
+import config from '/passsageDetails.config';
+import Visualization from './Visualization2D';
 import Leaflet from './Leaflet';
 
 export default {
-  name: 'DetailView',
+  name: 'PasssageDetails',
   data() {
     return {
       detailObject: {},
@@ -59,7 +59,7 @@ export default {
     };
   },
   components: {
-    VisComponent,
+    Visualization,
     Leaflet,
   },
   methods: {

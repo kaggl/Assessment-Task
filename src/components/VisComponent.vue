@@ -4,7 +4,9 @@
     :graph="getResults('keyword')"
     :onNodeClick="nodeClick"
     height="500" />
-    {{ getDetails('keyword') }}
+    <p>
+      <node-details v-if="getDetails('keyword').id" />
+    </p>
   </div>
 </template>
 
@@ -12,19 +14,28 @@
 import { mapGetters, mapMutations } from 'vuex';
 
 import Visualization from './Visualization2D';
+import NodeDetails from './NodeDetails';
 
 export default {
   components: {
-    Visualization
+    Visualization,
+    NodeDetails,
   },
   methods: {
     ...mapMutations([
       'setDetails',
     ]),
     nodeClick(node) {
-      console.log(node);
-      this.setDetails({name: 'keyword', obj: node});
+      console.log('node clicked', node);
+      this.debounce(this.setDetails({name: 'keyword', obj: node}), 500);
     },
+    debounce(func, time) {
+      let timer;
+      return (...args) => {
+        clearTimeout(timer);
+        timer = setTimeout(() => { func.apply(this, args); }, time);
+      };
+    }
   },
   computed: {
     ...mapGetters([
