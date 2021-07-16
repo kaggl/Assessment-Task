@@ -78,6 +78,7 @@
       <span v-else-if="loading">{{ $t('loading') }}...</span>
       <span v-else-if="count && type == 'DataTable'">{{ count }} {{ $t('results')}} {{ parseInt(offset) + 1 }}-{{ (parseInt(offset) + limit) > count ? count : (parseInt(offset) + limit) }}</span>
       <span v-else-if="getResults('keyword').nodes.length && type == 'VisComponent'">{{ $t('keyResults', { nodes: getResults('keyword').nodes.length, edges: getResults('keyword').edges.length })}}</span>
+      <span v-else-if="getResults('map').features.length && type == 'Places'">{{ getResults('map').count }} {{ $t('mapResults') }}!</span>
       <span v-else>{{ $t('noResults') }}</span>
     </p>
     <p v-if="type == 'DataTable'">
@@ -110,7 +111,6 @@ export default {
       keywordArr: [],
       keywordObj: [],
       keywordType: '',
-      mapResults: [],
       loading: false,
       count: 0,
       init: true,
@@ -156,7 +156,7 @@ export default {
         const urlParams = new URLSearchParams(url);
         this.offset = urlParams.get('offset') || 0;
       } else {
-        this.limit = parseInt(this.limitField)
+        this.limit = parseInt(this.limitField);
         this.offset = 0;
       }
 
@@ -245,7 +245,10 @@ export default {
       })
       .then(res => {
         console.log(res.data);
-        this.mapResults = res.data;
+        this.setResults({
+          name: 'map',
+          arr: res.data
+        });
         this.loading = false;
       })
       .catch((error) => {
@@ -360,6 +363,7 @@ export default {
     "loading": "loading",
     "results": "results found, showing",
     "keyResults": "{nodes} nodes and {edges} edges found!",
+    "mapResults": "locations found",
     "noResults": "No results",
     "resultsperPage": "Results per page",
     "previous": "Previous",
@@ -380,6 +384,7 @@ export default {
     "loading": "lädt",
     "results": "Ergebnisse gefunden, zeige",
     "keyResults": "{nodes} Knoten und {edges} Verbindungen gefunden!",
+    "mapResults": "Orte gefunden",
     "noResults": "Keine Suchergebnisse",
     "resultsperPage": "Ergebnisse pro Seite",
     "previous": "Vorherige",

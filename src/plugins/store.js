@@ -13,7 +13,10 @@ export default createStore({
           "edges": []
         }
       },
-      map: [],
+      map: {
+        type: 'FeatureCollection',
+        features: [],
+      },
     },
     details: {
       passage: {},
