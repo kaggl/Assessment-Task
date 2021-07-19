@@ -17,15 +17,16 @@
         <vue-bootstrap-typeahead
           type="text"
           placeholder="Use Case"
-          @keyup="getKeywords"
+          ref="useCaseRef"
+          @input="getKeywords"
+          @hit="selectedUseCase = $event"
           @keyup.enter="enterQuery"
-          :data="keywordArr"
+          :data="keywordObj"
+          :serializer="item => item.selected_text"
           v-if="advanced && type == 'DataTable'"
-          v-model="useCase"
           class="form-control"
           aria-describedby="basic-addon1"
           showAllResults="true"
-          ref="useCase"
         />
         <div class="input-group-prepend">
           <button class="btn btn-primary" @click="enterQuery"  type="button">
@@ -107,7 +108,7 @@ export default {
       input: '',
       keyInput: '',
       mapInput: '',
-      useCase: '',
+      selectedUseCase: {},
       keywordArr: [],
       keywordObj: [],
       keywordType: '',
@@ -148,7 +149,6 @@ export default {
       return dict[type];
     },
     send(url) {
-      console.log('ref', this.$refs.useCase?.inputValue, this.useCase);
       const urlProvided = typeof url == 'string';
       this.loading = true;
       if (urlProvided) {
@@ -160,21 +160,13 @@ export default {
         this.offset = 0;
       }
 
-      const params = {
+      (urlProvided ? axios(url) : axios('https://mmp.acdh-dev.oeaw.ac.at/api/stelle/', { params: {
         format: 'json',
         zitat_lookup: 'icontains',
         zitat: this.input,
         limit: this.limit,
-      }
-
-      console.log(this.advanced, this.useCaseInput);
-
-      console.log('useCase', this.useCase, this.useCaseInput);
-      if (this.advanced && this.useCaseInput) params.use_case = this.getKeywordIdfromText(this.useCaseInput);
-
-      console.log('params', params);
-
-      (urlProvided ? axios(url) : axios('https://mmp.acdh-dev.oeaw.ac.at/api/stelle/', { params }))
+        use_case: (this.advanced && this.selectedUseCase) ? this.selectedUseCase.id : undefined
+      }}))
       .then((res) => {
         console.log(res.data);
         this.count = res.data.count;
@@ -275,37 +267,31 @@ export default {
       else this.keywordSend()
     },
     getKeywords() {
+      console.log('useCaseInput', this.useCaseInput);
       axios('https://mmp.acdh-dev.oeaw.ac.at/archiv-ac/usecase-autocomplete/', {
         params: {
-          q: this.useCase,
+          q: this.useCaseInput,
         }
       })
       .then(res => {
-        console.log(res.data);
+        console.log('keyword auto', res.data);
         this.keywordObj = res.data.results;
-        this.keywordArr = this.keywordArr.concat(this.keywordObj.map(x => x.selected_text));
-
-        this.keywordObj = [...new Set(this.keywordObj)];
-        this.keywordArr = [...new Set(this.keywordArr)];
       })
       .catch((error) => {
         console.log(error);
       });
-    },
-    getKeywordIdfromText() {
-      return this.keywordObj.filter(x => x.selected_text == this.useCaseInput)[0]?.id;
     },
   },
   computed: {
     ...mapGetters([
       'getResults',
     ]),
+    useCaseInput() {
+      return this.$refs.useCaseRef?.inputValue;
+    },
     type() {
       console.log(this.$route);
       return this.$route.name;
-    },
-    useCaseInput() {
-      return this.$refs.useCase?.inputValue;
     },
   },
   mounted() {
