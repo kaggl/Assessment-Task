@@ -11,14 +11,28 @@
           </div>
         </div>
         <input type="text" :placeholder="$t('keywords')" @keyup.enter="enterQuery" v-if="type == 'VisComponent'" v-model="keyInput" class="form-control" aria-describedby="basic-addon1">
-        <input type="text" :placeholder="$t('keywords')" @keyup.enter="enterQuery" v-if="type == 'Places'" v-model="mapInput" class="form-control" aria-describedby="basic-addon1">
         <input type="text" :placeholder="$t('stelle')" @keyup.enter="enterQuery" v-if="type == 'DataTable'" v-model="input" class="form-control" aria-describedby="basic-addon1">
         <input type="text" :placeholder="$t('author')" @keyup.enter="enterQuery" v-if="advanced && type == 'VisComponent'" v-model="keywordAuthor" class="form-control" aria-describedby="basic-addon1">
+        <!--
+        <input type="text" :placeholder="$t('keywords')" @keyup.enter="enterQuery"  v-model="mapInput" class="form-control" aria-describedby="basic-addon1">
+      -->
         <vue-bootstrap-typeahead
-          type="text"
+          :placeholder="$t('keywords')"
+          ref="mapKeywordRef"
+          @input="getKeywords"
+          @hit="selectedKeyword = $event"
+          :data="keywordObj"
+          :serializer="item => item.selected_text"
+          v-if="type == 'Places'"
+          class="form-control"
+          aria-describedby="basic-addon1"
+          showAllResults="true"
+        />
+
+        <vue-bootstrap-typeahead
           placeholder="Use Case"
           ref="useCaseRef"
-          @input="getKeywords"
+          @input="getUseCases"
           @hit="selectedUseCase = $event"
           @keyup.enter="enterQuery"
           :data="keywordObj"
@@ -108,9 +122,10 @@ export default {
       input: '',
       keyInput: '',
       mapInput: '',
+      selectedKeyword: {},
       selectedUseCase: {},
-      keywordArr: [],
       keywordObj: [],
+      useCaseObj: [],
       keywordType: '',
       loading: false,
       count: 0,
@@ -233,10 +248,11 @@ export default {
       axios('https://mmp.acdh-dev.oeaw.ac.at/api/spatialcoverage/', {
         params: {
           format: 'json',
+          key_word: this.selectedKeyword.id || undefined,
         }
       })
       .then(res => {
-        console.log(res.data);
+        console.log('mapLocation', res.data);
         this.setResults({
           name: 'map',
           arr: res.data
@@ -266,11 +282,26 @@ export default {
       else if (this.type == 'VisComponent' && this.keywordAuthor) this.keywordSendWithAuthor();
       else this.keywordSend()
     },
-    getKeywords() {
+    getUsesCases() {
       console.log('useCaseInput', this.useCaseInput);
       axios('https://mmp.acdh-dev.oeaw.ac.at/archiv-ac/usecase-autocomplete/', {
         params: {
           q: this.useCaseInput,
+        }
+      })
+      .then(res => {
+        console.log('keyword auto', res.data);
+        this.useCaseObj = res.data.results;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    },
+    getKeywords() {
+      console.log('keywordInput', this.useCaseInput);
+      axios('https://mmp.acdh-dev.oeaw.ac.at/archiv-ac/keyword-autocomplete/', {
+        params: {
+          q: this.keywordInput,
         }
       })
       .then(res => {
@@ -288,6 +319,9 @@ export default {
     ]),
     useCaseInput() {
       return this.$refs.useCaseRef?.inputValue;
+    },
+    keywordInput() {
+      return this.$refs.mapKeywordRef?.inputValue;
     },
     type() {
       console.log(this.$route);
