@@ -28,7 +28,6 @@
           aria-describedby="basic-addon1"
           showAllResults="true"
         />
-
         <vue-bootstrap-typeahead
           placeholder="Use Case"
           ref="useCaseRef"
@@ -243,12 +242,12 @@ export default {
         this.loading = false;
       });
     },
-    mapSend() {
+    mapSend(id) {
       this.loading = true;
       axios('https://mmp.acdh-dev.oeaw.ac.at/api/spatialcoverage/', {
         params: {
           format: 'json',
-          key_word: this.selectedKeyword.id || undefined,
+          key_word: id || this.selectedKeyword.id || undefined,
         }
       })
       .then(res => {
@@ -266,12 +265,25 @@ export default {
 
     },
     enterQuery() {
+      const params = {
+        offsetProp: this.offset,
+      }
+      switch (this.type) {
+        case 'DataTable':
+          params.search = this.input;
+          break;
+        case 'VisComponent':
+          params.search = this.keyInput;
+          break;
+        case 'Places':
+          params.search = this.selectedKeyword.id;
+          break;
+        default: break;
+
+      }
       this.$router.push({
         name: this.getCompNameFromType(this.type),
-        params: {
-          search: this.type == 'DataTable' ? this.input : this.keyInput,
-          offsetProp: this.offset,
-        }
+        params
       });
       this.init = false;
 
@@ -332,6 +344,21 @@ export default {
     if (this.offsetProp) this.offset = parseInt(this.offsetProp);
     if (this.$route.params.search) {
       this.init = false;
+      switch (this.type) {
+        case 'DataTable':
+          this.input = this.$route.params.search;
+          this.send();
+          break;
+        case 'VisComponent':
+          this.keyInput = this.$route.params.search;
+          this.keywordSend();
+          break;
+        case 'Places':
+          this.mapSend(this.$route.params.search);
+          break;
+        default: break;
+
+      }
       if (this.type == 'DataTable') {
         this.input = this.$route.params.search;
         this.send();
