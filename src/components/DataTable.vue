@@ -41,6 +41,7 @@ export default {
   computed: {
     ...mapGetters([
       'getResults',
+      'getResponse',
     ]),
     entries() {
       return this.data || this.getResults('passage');
@@ -56,6 +57,7 @@ export default {
   methods: {
     ...mapMutations([
       'addAuthorsToPassages',
+      'addApiResponse',
     ]),
     getIdFromUrl: url => url.match(/(\d+)/)[0],
     localeAuthors(arr) {
@@ -68,22 +70,35 @@ export default {
         this.authorObj[this.entries[i].url] = [];
 
         for (let j = 0; j < authorArray.length; j += 1) {
-          axios(authorArray[j])
-          .then(res => {
-            console.log('Autor', res.data);
+          const response = this.getResponse(authorArray[j]);
+          if (response) {
             this.authorObj[this.entries[i].url].push({
-              de: res.data.name,
-              en: res.data.name_en,
-              fr: res.data.name_fr,
-              gr: res.data.name_gr,
-              it: res.data.name_it,
-              lat: res.data.name_lat,
+              de: response.name,
+              en: response.name_en,
+              fr: response.name_fr,
+              gr: response.name_gr,
+              it: response.name_it,
+              lat: response.name_lat,
             });
             this.renderKey -=- 1;
-          })
-          .catch((error) => {
-            console.log(error);
-          });
+          } else {
+            axios(authorArray[j])
+            .then(res => {
+              this.addApiResponse({ url: authorArray[j], response: res.data});
+              this.authorObj[this.entries[i].url].push({
+                de: res.data.name,
+                en: res.data.name_en,
+                fr: res.data.name_fr,
+                gr: res.data.name_gr,
+                it: res.data.name_it,
+                lat: res.data.name_lat,
+              });
+              this.renderKey -=- 1;
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+          }
         }
       }
     },
