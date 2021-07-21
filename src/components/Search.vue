@@ -34,7 +34,7 @@
           @input="getUseCases"
           @hit="selectedUseCase = $event"
           @keyup.enter="enterQuery"
-          :data="keywordObj"
+          :data="useCaseObj"
           :serializer="item => item.selected_text"
           v-if="advanced && type == 'DataTable'"
           class="form-control"
@@ -294,7 +294,7 @@ export default {
       else if (this.type == 'VisComponent' && this.keywordAuthor) this.keywordSendWithAuthor();
       else this.keywordSend()
     },
-    getUsesCases() {
+    getUseCases() {
       console.log('useCaseInput', this.useCaseInput);
       axios('https://mmp.acdh-dev.oeaw.ac.at/archiv-ac/usecase-autocomplete/', {
         params: {
