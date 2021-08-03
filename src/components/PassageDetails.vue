@@ -33,6 +33,7 @@
 
 <script>
 import axios from 'axios';
+import { mapGetters, mapMutations } from 'vuex';
 
 import config from '/passsageDetails.config';
 import Visualization from './Visualization2D';
@@ -63,22 +64,31 @@ export default {
     Leaflet,
   },
   methods: {
+    ...mapMutations([
+      'addApiResponse',
+    ]),
     getLocaleKeyFromEn(key) {
       return config.attributes.find(x => x.name.en == key).name[this.$i18n.locale];
     },
     getDetails(id) {
-      axios(`https://mmp.acdh-dev.oeaw.ac.at/api/stelle/${id}`, {
-        params: {
-          format: 'json',
-        }
-      })
-      .then((res) => {
-        console.log('Stelle', res.data);
-        this.detailObject = res.data;
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+      const url = `https://mmp.acdh-dev.oeaw.ac.at/api/stelle/${id}`;
+      const response = this.getResponse(url);
+      if (response) this.detailObject = response;
+      else {
+        axios(url, {
+          params: {
+            format: 'json',
+          }
+        })
+        .then((res) => {
+          console.log('Stelle', res.data);
+          this.detailObject = res.data;
+          this.addApiResponse({ url, response: res.data });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      }
     },
     getKeywordGraph(id) {
       axios('https://mmp.acdh-dev.oeaw.ac.at/archiv/keyword-data/', {
@@ -115,6 +125,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters([
+      'getResponse',
+    ]),
     graphWidth() {
       return this.$refs.table?.width;
     },
