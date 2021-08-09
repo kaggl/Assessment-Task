@@ -276,7 +276,7 @@ export default {
           params.search = this.keyInput;
           break;
         case 'Places':
-          params.search = this.selectedKeyword.id;
+          params.search = this.selectedKeyword.id || '';
           break;
         default: break;
 
@@ -329,11 +329,16 @@ export default {
     ...mapGetters([
       'getResults',
     ]),
+    keywordInput: {
+      get: function () {
+        return this.$refs.mapKeywordRef?.inputValue;
+      },
+      set: function (val) {
+        this.$refs.mapKeywordRef.inputValue = val;
+      },
+    },
     useCaseInput() {
       return this.$refs.useCaseRef?.inputValue;
-    },
-    keywordInput() {
-      return this.$refs.mapKeywordRef?.inputValue;
     },
     type() {
       console.log(this.$route);
@@ -355,6 +360,20 @@ export default {
           break;
         case 'Places':
           this.mapSend(this.$route.params.search);
+          axios('https://mmp.acdh-dev.oeaw.ac.at/api/spatialcoverage/', {
+            params: {
+              format: 'json',
+              id: this.$route.params.search - 1,
+            }
+          })
+          .then(res => {
+            const keyword = res.data.features[0].properties.key_word
+            console.log('mounted spatial response', res.data, keyword);
+            this.keywordInput = `${keyword.stichwort}, [wurzel: ${keyword.wurzel}]`;
+          })
+          .catch(err => {
+            console.log(err);
+          });
           break;
         default: break;
 

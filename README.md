@@ -2,6 +2,8 @@
 
 > A frontend component in VueJS
 
+This project is the base for [acdh-oeaw / mmp-frontend/](https://github.com/acdh-oeaw/mmp-frontend), and will probably not be updated anymore.
+
 ## Build Setup
 
 ``` bash

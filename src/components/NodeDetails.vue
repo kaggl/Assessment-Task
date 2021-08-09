@@ -126,10 +126,4 @@ export default {
   .list {
     text-align: left;
   }
-  .list:before {
-    content: '\25BC ';
-  }
-  .collapsed.list:before {
-    content: '\25B2 ';
-  }
 </style>
